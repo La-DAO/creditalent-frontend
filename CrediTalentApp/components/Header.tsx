@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import AuthButton from "./buttons/authButton"
 
 export default function Header() {
   return (
@@ -19,9 +19,13 @@ export default function Header() {
           <Link href="#" className="text-gray-600 hover:text-gray-900">
             Support
           </Link>
-          <Button className="rounded-full bg-[#FF5722] text-white hover:bg-[#FF5722]/90">
+
+          {/* <Button className="rounded-full bg-[#FF5722] text-white hover:bg-[#FF5722]/90">
             Connect
-          </Button>
+          </Button> */}
+
+          <AuthButton />
+
         </div>
       </nav>  
     </>
