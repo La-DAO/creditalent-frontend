@@ -93,14 +93,14 @@ export default function Component() {
                 title: "Borrow $XOC",
                 color: "bg-[#40C057]",
                 number: "2",
-                image: "/assets/BorrowXOC.png",
+                image: "/assets/BorrowXoc.png",
                 description: "The online form usually takes less than 10 minutes to complete. So before you even finish your cup of tea, you’ll already have your request submitted."
               },
               {
                 title: "Borrow $USDC",
                 color: "bg-[#FF922B]",
                 number: "3",
-                image: "/assets/BorrowUSDC.png",
+                image: "/assets/BorrowUsdc.png",
                 description: "Once you submit your request, get your offer, and e-sign it, you’ll be able to get the funds to your bank account in no time!"
               },
             ].map((option) => (
