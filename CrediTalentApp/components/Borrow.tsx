@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-// import { useState } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,9 +9,52 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Ecosistema from './Ecosistema'
 import AboutPool from './AboutPool'
+import { useQuery } from '@tanstack/react-query'
+import { fetchTalentPassport } from '../controllers/talentProtocolApi'
+import { useAccount } from 'wagmi'
+import { useEffect } from 'react'
+import { CREDIT_ALLOWANCE_BY_SCORE } from '../lib/constants'
+import { BuilderScoreChart } from './builder-score-chart'
+import NoPassportCard from './noPassportCard'
+import { ExternalLink, LoaderCircle } from 'lucide-react'
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
+  
+  const [creditAllowed, setCreditAllowed] = useState(0)
+  const { address: userAddress } = useAccount()
+
+
+  const { data: talentPassportData, status: talentPassportQueryStatus } =
+    useQuery({
+      queryKey: ['talentPassportKey'],
+      queryFn: () => fetchTalentPassport(userAddress as string),
+      enabled: Boolean(userAddress),
+    })
+
+    function getCreditAllowance(score: number) {
+      let creditAllowed = 0
+  
+      for (const [key, value] of Object.entries(CREDIT_ALLOWANCE_BY_SCORE)) {
+        if (score >= parseInt(key)) {
+          creditAllowed = value
+        }
+      }
+  
+      return creditAllowed
+    }
+  
+
+  useEffect(() => {
+    console.log(talentPassportData)
+    if (talentPassportData) {
+      const calculatedCreditAllowed = getCreditAllowance(
+        talentPassportData.score,
+      )
+      setCreditAllowed(calculatedCreditAllowed)
+    }
+  }, [talentPassportData])
+
 
   return (
 
@@ -105,39 +149,28 @@ export default function Component() {
               <CardTitle className="text-xl font-medium">Your Risk Profile</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="relative mx-auto w-48">
-                <svg className="h-48 w-48" viewBox="0 0 100 100">
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke="#f0f0f0"
-                    strokeWidth="10"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke="#FF4405"
-                    strokeWidth="10"
-                    strokeDasharray="282.7"
-                    strokeDashoffset="120"
-                    transform="rotate(-90 50 50)"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-2xl">Builder</div>
-                    <div className="text-5xl font-bold text-[#FF4405]">57</div>
-                    <div className="text-xl">Score</div>
-                  </div>
-                </div>
+              <div className="relative mx-auto">
+
+              { talentPassportQueryStatus === 'pending' && (
+              <>
+              <div className="flex flex-col items-center justify-center min-h-[192px]">
+                <LoaderCircle className="h-16 w-16 animate-spin text-[#FF4405]" />
+                <h4>Calculando tu Reputación Onchain...</h4>
+              </div>
+              </>
+              )}
+
+              { talentPassportQueryStatus === 'success' &&
+                (talentPassportData ? (
+                <BuilderScoreChart builderScore={talentPassportData?.score ?? 0} />
+              ) : (
+                <NoPassportCard />
+              ))}
+
               </div>
               <div className="space-y-4 text-sm">
                 <p className="text-muted-foreground">
-                  With 57 points you are a competent Builder and someone we can trust making the right
+                  With {talentPassportData?.score ?? 0} points you are a competent Builder and someone we can trust making the right
                   choices with investor&apos;s money.
                 </p>
                 <p>Request a new credit line of up to $1,500 USDC&apos;s worth of tokens.</p>
