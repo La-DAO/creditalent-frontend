@@ -1,7 +1,12 @@
+'use client'
+
 import Link from "next/link"
 import AuthButton from "./buttons/authButton"
+import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 
 export default function Header() {
+  const isLoggedIn = useIsLoggedIn();
+
   return (
     <>
       {/* Navigation */}
@@ -10,12 +15,17 @@ export default function Header() {
           CrediTalent
         </Link>
         <div className="hidden items-center space-x-8 md:flex">
-          <Link href="/borrow" className="text-gray-600 hover:text-gray-900">
-            Borrow
-          </Link>
-          <Link href="/earn" className="text-gray-600 hover:text-gray-900">
-            Earn
-          </Link>
+
+          {isLoggedIn && (
+            <Link href="/borrow" className="text-gray-600 hover:text-gray-900">
+              Borrow
+            </Link>
+          )}
+          {isLoggedIn && (
+            <Link href="/earn" className="text-gray-600 hover:text-gray-900">
+              Earn
+            </Link>
+          )}
           <Link href="#" className="text-gray-600 hover:text-gray-900">
             Support
           </Link>

@@ -1,12 +1,38 @@
+'use client';
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { useIsLoggedIn, useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useRouter } from 'next/navigation'
 
 export default function Component() {
+
+  const isLoggedIn = useIsLoggedIn();
+  const router = useRouter();
+  const { setShowAuthFlow } = useDynamicContext()
+
+  const processRequestLoan = () => {
+    if (!isLoggedIn) {
+      // login the user with dynamic labs
+      setShowAuthFlow(true);
+    } else {
+      router.push('/borrow');
+    }
+  }
+
+  const processRequestEarn = () => {
+    if (!isLoggedIn) {
+      // login the user with dynamic labs
+      setShowAuthFlow(true)
+    } else {
+      router.push('/earn');
+    }
+  }
+
   return (
     <>
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-4 py-8">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tight text-[#1A2B48] sm:text-5xl xl:text-6xl">
@@ -17,31 +43,29 @@ export default function Component() {
               you need in a timely manner to meet your financial requirements.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/borrow">
                 <Button
                   variant="outline"
                   className="rounded-full border-2 border-gray-900 bg-transparent px-8 text-gray-900 hover:bg-gray-50"
+                  onClick={processRequestLoan}
               >
                   Request A Loan
-                    </Button>
-              </Link>
-              <Link href="/earn">
+                </Button>
                 <Button
                   variant="outline"
-                className="rounded-full border-2 border-gray-900 bg-transparent px-8 text-gray-900 hover:bg-gray-50"
+                  className="rounded-full border-2 border-gray-900 bg-transparent px-8 text-gray-900 hover:bg-gray-50"
+                  onClick={processRequestEarn}
               >
                 Earn Interest
               </Button>
-              </Link>
             </div>
           </div>
           <div className="">
-            <div className="h-[400px] w-full">
+            <div className="h-[330px] w-full">
               <Image
                 src="/assets/Hero.png?height=400&width=500"
                 alt="Banking Illustration"
                 width={500}
-                height={400}
+                height={326}
                 className="relative z-10"
                 priority
               />
@@ -51,8 +75,8 @@ export default function Component() {
       </section>
 
       {/* Borrowing Options */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="rounded-3xl bg-blue-50/50 px-4 py-16">
+      <section className="container mx-auto px-4 py-8">
+        <div className="rounded-3xl bg-blue-50/50 px-4 py-8">
           <h2 className="mx-auto mb-16 max-w-3xl text-center text-3xl font-bold text-[#1A2B48]">
             Usamos tu pasaporte Talent para calcular tu perfil de riesgo y extenderte una línea de credito instantanea.
           </h2>
@@ -108,7 +132,7 @@ export default function Component() {
       </section>
 
       {/* How it Works */}
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 py-8">
         <h2 className="mb-2 text-center text-3xl font-bold text-[#1A2B48]">How we works?</h2>
         <p className="mb-16 text-center text-gray-600">
           This is a process, how you can get loan for your self.
