@@ -9,9 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coinbase/onchainkit": "^0.35.4",
+    "@dynamic-labs/ethereum": "^3.5.1",
+    "@dynamic-labs/sdk-react-core": "^3.5.1",
+    "@dynamic-labs/wagmi-connector": "^3.5.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.1",
+    "@tanstack/react-query": "^5.59.19",
     "@tanstack/react-table": "^8.20.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -20,8 +25,11 @@
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^2.13.3",
+    "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "^2.21.40",
+    "wagmi": "^2.12.25"
   },
   "devDependencies": {
     "@types/node": "^20",
