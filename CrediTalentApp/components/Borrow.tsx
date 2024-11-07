@@ -17,12 +17,16 @@ import { CREDIT_ALLOWANCE_BY_SCORE } from '../lib/constants'
 import { BuilderScoreChart } from './builder-score-chart'
 import NoPassportCard from './noPassportCard'
 import { ExternalLink, LoaderCircle } from 'lucide-react'
+import { createLoanApplication } from '../controllers/creditalentApi'
+import { CreateLoanApplicationData } from '@/types/creditalent-responses'
+import { TalentPassportType } from '@/types/talent-protocol-responses'
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
   
   const [creditAllowed, setCreditAllowed] = useState(0)
   const { address: userAddress } = useAccount()
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
 
   const { data: talentPassportData, status: talentPassportQueryStatus } =
@@ -43,8 +47,63 @@ export default function Component() {
   
       return creditAllowed
     }
-  
 
+    const createLoanApplicationDataFromTalentPassport = (
+      talentPassport: TalentPassportType,
+      amount: number, // You'll need to get the amount from somewhere (e.g., user input)
+      availableCreditLine: number,  // Get available credit line
+      creditLineId: number // Get credit line id
+    ): CreateLoanApplicationData => {
+    
+    
+      const totalFollowerCount = talentPassport.passport_socials.reduce(
+        (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
+        0,
+      )
+    
+    
+      const loanApplicationData: CreateLoanApplicationData = {
+        amount,
+        availableCreditLine,
+        status: 'PENDING', // Default status
+        xocScore: -1, // Or whatever default value you use
+        builderScore: talentPassport.score,
+        nominationsReceived: talentPassport.nominations_received_count,
+        followers: totalFollowerCount, 
+        walletId: talentPassport.main_wallet,
+        applicantId: parseInt(talentPassport.user.id, 10), // Assuming user.id is a string, convert to number
+        creditLineId: creditLineId,
+      }
+    
+      return loanApplicationData
+    }
+    const handleRequestCreditLine = async () => {
+      try {
+        setIsLoading(true)
+        const creditLineId = 100; // TODO: REMOVE HARDCODED
+        if (!creditLineId) { // Check if creditLineId is defined
+          return;
+        }
+  
+        const dataToSend = createLoanApplicationDataFromTalentPassport(
+          talentPassportData as TalentPassportType, // Type assertion if needed
+          creditAllowed,
+          creditAllowed,
+          creditLineId,
+        );
+  
+        const response = await createLoanApplication(dataToSend)
+          console.log('🚀 ~ handleRequestCreditLine ~ response:', response)
+          // ... the rest of your handleApprove logic
+  
+      } catch (error) {
+          // ... error handling ...
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+   
   useEffect(() => {
     console.log(talentPassportData)
     if (talentPassportData) {
@@ -138,7 +197,10 @@ export default function Component() {
                   </div>
                 </div>
               ))}
-              <Button className="w-full bg-[#FF4405] hover:bg-[#FF4405]/90">
+              <Button className="w-full bg-[#FF4405] hover:bg-[#FF4405]/90" 
+              onClick={handleRequestCreditLine} 
+              disabled={isLoading}
+              >
                 Request a New Credit Line
               </Button>
             </CardContent>
