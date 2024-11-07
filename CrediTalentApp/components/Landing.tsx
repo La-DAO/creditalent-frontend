@@ -84,24 +84,21 @@ export default function Component() {
             {[
               {
                 title: "Borrow $TALENT",
-                color: "bg-[#4263EB]",
-                number: "1",
-                image: "/assets/BorrowTalent.png",
-                description: "All paperwork is gone! The whole process is completely online. Just fill in a few details about yourself and hit “Get Started”!"
+                color: "bg-[#826AEE]",
+                image: "/assets/talent-logo.jpg",
+                description: "You can use borrowed $Talent to temporarily increase your Builder Score, or to degen into a DeFi Protocol”!"
               },
               {
                 title: "Borrow $XOC",
-                color: "bg-[#40C057]",
-                number: "2",
-                image: "/assets/BorrowXoc.png",
-                description: "The online form usually takes less than 10 minutes to complete. So before you even finish your cup of tea, you’ll already have your request submitted."
+                color: "bg-[#693E34]",
+                image: "/assets/xoc logo.png",
+                description: "You can use your borrowed $XOC to leverage yourself denominated in pesos, to buy CETES or any other lever that this new money lego offers."
               },
               {
                 title: "Borrow $USDC",
-                color: "bg-[#FF922B]",
-                number: "3",
-                image: "/assets/BorrowUsdc.png",
-                description: "Once you submit your request, get your offer, and e-sign it, you’ll be able to get the funds to your bank account in no time!"
+                color: "bg-[#93BBFB]",
+                image: "/assets/usdc-logo.png",
+                description: "$USDC is the widest used stablecoin in the world, you can use it to buy more crypto or to pay your bills."
               },
             ].map((option) => (
               <div
@@ -112,9 +109,6 @@ export default function Component() {
                   <p className="text-sm font-medium">Borrow</p>
                   <h3 className="text-2xl font-bold">{option.title}</h3>
                   <div className="mt-auto">
-                    <span className="inline-block rounded-full bg-white/20 px-3 py-1 text-sm">
-                      {option.number}
-                    </span>
                   </div>
                   <p className="text-sm w-[150px]">{option.description}</p>
                   </div>
@@ -123,7 +117,7 @@ export default function Component() {
                   alt="Person"
                   width={200}
                   height={200}
-                  className="absolute bottom-0 right-0 opacity-80"
+                  className="absolute bottom-0 right-0 opacity-80 rounded-full p-10 m-10"
                 />
               </div>
             ))}
@@ -143,38 +137,38 @@ export default function Component() {
               title: "Application",
               description:
                 "The borrower submits a loan application to the smart contract. The application includes personal information, such as name, biography, wallet address and activity within it, Activity Skills and Builder Score, and the purpose of the loan.",
-              image: "/assets/Application.png?v=1&height=200&width=200",
+              image: "/assets/Hands - Give.png",
             },
             {
               title: "Credit-Line Approval",
               description:
                 "The investors see a list of all applicants and approve a credit line to a borrower in a given token ($Talent, $usdc or $xoc), the funds are then instantly available for the borrower to withdraw.",
-              image: "/assets/CreditLineApproval.png?height=200&width=200",
+              image: "/assets/Hands - Phone.png",
             },
             {
               title: "Loan Management Console",
               description:
                 "The borrower can then withdraw the full amount that was approved by the investor all in a decentralized manner, the smart contract being the Schelling Point.",
-              image: "/assets/LoanManagementConsole.png?height=200&width=200",
+              image: "/assets/Hands - Show.png",
             },
             {
               title: "Loan Repayment Agreement",
               description:
                 "If the borrower doesn't pay, they will be added to the Wall of Shame and hounded on social media to repay the loan.",
-              image: "/assets/LoanRepaymentAgreement.png?height=200&width=200",
+              image: "/assets/Hands - Presenting [colors].png",
             },
           ].map((step, index) => (
             <div key={step.title} className="relative flex gap-8">
-              <div className="text-8xl font-bold text-gray-400">0{index + 1}</div>
+              <div className="text-8xl font-bold text-orange-500">0{index + 1}</div>
               <div className="space-y-4">
                 <Image
                   src={step.image}
                   alt={step.title}
-                  width={200}
-                  height={200}
-                  className="h-32 w-32"
+                  width={400}
+                  height={400}
+                  className="h-auto w-32"
                 />
-                <h3 className="text-xl font-bold text-[#1A2B48]">{step.title}</h3>
+                <h3 className="text-xl font-bold text-orange-500">{step.title}</h3>
                 <p className="text-gray-600">{step.description}</p>
               </div>
             </div>

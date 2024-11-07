@@ -59,23 +59,6 @@ export default function Footer() {
               Do Not Sell My Personal Information
             </Link>
           </div>
-          <div className="text-center text-xs text-gray-500">
-            <p className="mx-auto mb-4 max-w-3xl">
-              The operator of this Website is not a loan broker, lender, financial institution or an agent of a loan broker
-              or lender. The operator of this Website does not in any way get involved in a lenders decision regarding loan
-              approval or denial. The operator of this Website provides a no obligation, free of charge service introducing
-              prospective borrowers to prospective lenders who offer loans.
-            </p>
-            <p className="mx-auto mb-4 max-w-3xl">
-              This Website operates a facility for prospective borrowers looking to learn and the possibility to connect with
-              lenders who can provide these loans. In order for this Website to enable such a borrowing process, each
-              borrower must complete a loan application. The Website works with its partners to determine whether this might
-              be interested in offers to such lending opportunities. Compensation is given to the operator of this Website
-              from the lenders who, based on their assessments, decide that a potential borrower may meet their lending
-              conditions.
-            </p>
-            <p>Copyright ©2022 Brighter Future II. All Rights Reserved</p>
-          </div>
         </div>
       </footer>
      </>
