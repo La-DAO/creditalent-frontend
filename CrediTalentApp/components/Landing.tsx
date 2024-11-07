@@ -33,16 +33,16 @@ export default function Component() {
     <>
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="grid items-center gap-12 lg:grid-cols-2 mt-28">
           <div className="space-y-6">
-            <h1 className="text-4xl font-bold tracking-tight text-[#1A2B48] sm:text-5xl xl:text-6xl">
+            <h1 className="m-10 text-4xl font-bold tracking-tight text-[#1A2B48] sm:text-5xl xl:text-6xl">
               Quick and Easy Loans for Your Web3 Needs.
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 m-10">
               Our loan smart contracts offer a hassle-free and streamlined borrowing experience providing you with the funds
               you need in a timely manner to meet your financial requirements.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 ml-10">
                 <Button
                   variant="outline"
                   className="rounded-full border-2 border-gray-900 bg-transparent px-8 text-gray-900 hover:bg-gray-50"
@@ -60,7 +60,7 @@ export default function Component() {
             </div>
           </div>
           <div className="">
-            <div className="h-[330px] w-full">
+            <div className="h-[330px] w-full ml-16">
               <Image
                 src="/assets/Hero.png?height=400&width=500"
                 alt="Banking Illustration"
@@ -77,7 +77,7 @@ export default function Component() {
       {/* Borrowing Options */}
       <section className="container mx-auto px-4 py-8">
         <div className="rounded-3xl bg-blue-50/50 px-4 py-8">
-          <h2 className="mx-auto mb-16 max-w-3xl text-center text-3xl font-bold text-[#1A2B48]">
+          <h2 className="mx-auto mb-16 mt-32 max-w-3xl text-center text-3xl font-bold text-[#1A2B48]">
             Usamos tu pasaporte Talent para calcular tu perfil de riesgo y extenderte una línea de credito instantanea.
           </h2>
           <div className="grid gap-8 md:grid-cols-3">
