@@ -166,7 +166,7 @@ export default function Component() {
                   alt={step.title}
                   width={400}
                   height={400}
-                  className="h-auto w-32"
+                  className="h-auto w-150"
                 />
                 <h3 className="text-xl font-bold text-orange-500">{step.title}</h3>
                 <p className="text-gray-600">{step.description}</p>
