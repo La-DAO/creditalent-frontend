@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Check, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,30 +12,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Avatar } from "@coinbase/onchainkit/identity";
 import { LoanApplicationExtended } from "@/types/creditalent-responses";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
-import { ApproveModalButton } from "./onchain/approveModalButton";
-import { DenyModalButton } from "./onchain/denyModalButton";
-
-interface ApplicationProps {
-  nombre: string;
-  cartera: string;
-  bio: string;
-  ubicacion: string;
-  activityScore: number;
-  identityScore: number;
-  skillsScore: number;
-  humanCheckmark: boolean;
-  status?: "pending" | "approved";
-}
 
 export default function Component() {
-  // const [balance, setBalance] = React.useState("0")
   const [amount, setAmount] = React.useState("");
-  const { data: loanApplicationsData, status: loanApplicationsQueryStatus } =
-    useQuery({
-      queryKey: ["loanApplicationsKey"],
-      queryFn: () => fetchLoanApplications(),
+  const { data: loanApplicationsData } =
+  useQuery({
+    queryKey: ["loanApplicationsKey"],
+    queryFn: () => fetchLoanApplications(),
     });
-
+    
   return (
     <div className="container mx-auto px-4 py-6">
       <Tabs defaultValue="add-balance" className="w-full">

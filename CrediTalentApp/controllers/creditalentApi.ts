@@ -17,7 +17,7 @@ export const fetchLoanApplications =
       }
 
       const data = await response.json()
-      console.log('API Response:', data) // Log the full response to inspect it
+      console.log('API creditalentApi  Response:', data) // Log the full response to inspect it
 
       return data
     } catch (error) {
@@ -46,7 +46,6 @@ export const createLoanApplication = async (
     }
 
     const resData = await response // Return the response data
-    console.log('🚀 ~ resData:', resData)
 
     return resData
   } catch (error) {
