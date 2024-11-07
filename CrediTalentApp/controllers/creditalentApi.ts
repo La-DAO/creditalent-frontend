@@ -1,11 +1,11 @@
-import { CreateLoanApplicationData } from '../types/creditalent-responses'
+import { CreateLoanApplicationData, LoanApplicationExtended } from '../types/creditalent-responses'
 
 
 export const fetchLoanApplications =
-  async (): Promise<CreateLoanApplicationData | null> => {
+  async (): Promise<LoanApplicationExtended | null> => {
     try {
 
-      const response = await fetch(`${process.env.CREDITALENT_API_URL}/api/loan-applications`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_CREDITALENT_API_URL}/api/loan-applications`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
