@@ -16,35 +16,6 @@ export default function Footer() {
               className="h-10"
             />
           </div>
-          <div className="mb-8 flex flex-wrap justify-center gap-6 text-sm text-gray-600">
-            <Link href="#" className="hover:text-gray-900">
-              Home
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              Get Started
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              How It Works
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              Testimonials
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              FAQ
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              Lending Policy
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              Rates & Fees
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              Contact Us
-            </Link>
-            <Link href="#" className="hover:text-gray-900">
-              Unsubscribe
-            </Link>
-          </div>
           <div className="mb-8 flex flex-wrap justify-center gap-6 text-xs text-gray-500">
             <Link href="#" className="hover:text-gray-700">
               Terms And Conditions
