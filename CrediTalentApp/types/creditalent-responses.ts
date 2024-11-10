@@ -3,6 +3,7 @@ export type CreateLoanApplicationData = {
   amount: number
   availableCreditLine: number
   status?: string
+  tokenType: string
   xocScore: number
   builderScore: number
   nominationsReceived: number
