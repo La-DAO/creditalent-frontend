@@ -95,6 +95,7 @@ export function NewCreditRequestModal({
       // ... error handling ...
     } finally {
       setIsLoading(false);
+      setIsOpen(false)
     }
   };
 
