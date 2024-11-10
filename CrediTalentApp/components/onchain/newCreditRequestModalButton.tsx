@@ -14,7 +14,10 @@ import { toast } from "sonner";
 import { createLoanApplication } from "@/controllers/creditalentApi";
 import { CreateLoanApplicationData } from "@/types/creditalent-responses";
 import { TalentPassportType } from "@/types/talent-protocol-responses";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import CreditTalentCenterABI from "./abis/CreditTalentCenter";
+import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
 
 export function NewCreditRequestModal({
   talentPassportData,
@@ -28,16 +31,18 @@ export function NewCreditRequestModal({
   const [selectedToken, setSelectedToken] = useState("xoc"); // Default to $xoc
   const [isLoading, setIsLoading] = useState(false); // Add loading state
   const { address: accountAddress } = useAccount();
+  const { user, primaryWallet } = useDynamicContext()
+  const { writeContractAsync, data: hash, isSuccess } = useWriteContract()
 
   const createLoanApplicationDataFromTalentPassport = (
     walletId: string, // Wallet Id
-    talentPassport: TalentPassportType,
     amount: number, // You'll need to get the amount from somewhere (e.g., user input)
     availableCreditLine: number, // Get available credit line
     creditLineId: number, // Get credit line id
-    tokenType: string // Token ttype
+    tokenType: string, // Token ttype
+    talentPassport?: TalentPassportType | null,
   ): CreateLoanApplicationData => {
-    const totalFollowerCount = talentPassport.passport_socials.reduce(
+    const totalFollowerCount = talentPassport?.passport_socials?.reduce(
       (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
       0
     );
@@ -48,11 +53,11 @@ export function NewCreditRequestModal({
       assetType: tokenType,
       status: "PENDING", // Default status
       xocScore: -1, // Or whatever default value you use
-      builderScore: talentPassport.score,
-      nominationsReceived: talentPassport.nominations_received_count,
-      followers: totalFollowerCount,
+      builderScore: talentPassport?.score ?? -1,
+      nominationsReceived: talentPassport?.nominations_received_count ?? -1,
+      followers: totalFollowerCount ?? -1,
       walletId: walletId,
-      applicantId: parseInt(talentPassport.user.id, 10), // Assuming user.id is a string, convert to number
+      applicantId: parseInt(talentPassport?.user?.id ?? '', 10), // Assuming user.id is a string, convert to number
       creditLineId: creditLineId,
     };
 
@@ -67,7 +72,7 @@ export function NewCreditRequestModal({
         return;
       }
 
-      if (talentPassportData === null) {
+      if (talentPassportData === null && isTalentPassportRequired) {
         toast.error("Required talent passport!");
         return;
       }
@@ -79,25 +84,67 @@ export function NewCreditRequestModal({
 
       const dataToSend = createLoanApplicationDataFromTalentPassport(
         accountAddress!,
-        talentPassportData!, // Type assertion if needed
         +amount,
         creditAllowed,
         creditLineId,
-        selectedToken
+        selectedToken,
+        talentPassportData, // Type assertion if needed
       );
 
-      const response = await createLoanApplication(dataToSend);
-      console.log('🚀 ~ handleRequestCreditLine ~ response:', response)
-      toast.success("Applicatin created successfully");
+      // TODO: Confirm con daigaro 
+       await writeLoanApplication()
+
+      const applicationId = await createLoanApplication(dataToSend);
+
+      if (applicationId == null) {
+        console.log("applicationId not valid ");
+        return;
+      }
+
     } catch (error) {
-      console.log("Error: ", error);
-      toast.error("Ups..");
+      toast.error("Ups.." + error);
       // ... error handling ...
     } finally {
       setIsLoading(false);
       setIsOpen(false)
     }
   };
+  async function writeLoanApplication() {
+    console.log('Antes de write contract')
+
+    try {
+      if (primaryWallet?.connector.supportsNetworkSwitching()) {
+        toast.info('Cambia tu red a Base Sepolia')
+        await primaryWallet.switchNetwork(84532)
+        console.log('Success! Network switched')
+      }
+
+      const currentChainId = await primaryWallet?.getNetwork()
+      if (currentChainId !== 84532) {
+        return toast.error(
+          'Red no soportada, cambia de red y vuelva a intentar',
+        )
+      }
+      const inputApplyToCredit = '0x0000000000000000000000000000000000000000000000000000000000000002'
+
+      const hash = await writeContractAsync({
+        address: '0x0E44B48406b5E7Bba4E6d089542719Cb2577d444',
+        abi: CreditTalentCenterABI,
+        functionName: 'applyToCredit',
+        args: [inputApplyToCredit], //TODO:  `${convertToBytes32(loanApplicationId)}`
+      })
+
+      if (isSuccess) {
+        console.log('Application successful:', hash)
+        
+      }
+    } catch (error) {
+      if (`${error}`.includes('applicationAlreadyExists')){
+        throw Error("Application already exists")
+      }
+    }
+    console.log('despues de write contract')
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

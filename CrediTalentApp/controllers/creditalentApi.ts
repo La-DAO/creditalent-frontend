@@ -29,7 +29,7 @@ export const fetchLoanApplications =
 
 export const createLoanApplication = async (
   data: CreateLoanApplicationData,
-) => {
+):  Promise<number | null> => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_CREDITALENT_API_URL}/api/loan-applications`, {
       method: 'POST',
@@ -45,9 +45,10 @@ export const createLoanApplication = async (
       throw new Error(errorData.message || 'Failed to create loan application')
     }
 
-    const resData = await response // Return the response data
+    const resData = await response.json() // Return the response data
+    console.log('🚀 ~ resData:', resData)
 
-    return resData
+    return +resData
   } catch (error) {
     console.log(error)
     console.error('Error creating loan application:', error)
@@ -71,14 +72,13 @@ export const getCreditInfo = async (
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to create loan application')
-    }
+      }
+    console.log('🚀 ~ response:', response)
     const data = await response.json()
-    console.log('🚀 ~ getCreditInfo:', data)
 
     return data
   } catch (error) {
     console.log(error)
-    console.error('Error getCreditInfo:', error)
     return null
   }
 }
