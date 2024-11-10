@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { parseEther } from 'viem'
+import { Address, parseEther } from 'viem'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -15,6 +15,9 @@ import { Label } from '../ui/label'
 import Link from 'next/link'
 import { ArrowUpRightIcon, ExternalLinkIcon, LoaderCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { ERC20ABI } from './abis/erc20'
+import { assetContractFactory, talentCenterContractFactory } from '@/lib/utils'
+import { AssetType } from "@/types/creditalent-responses"
 
 export default function SendModalButton() {
   const [amount, setAmount] = useState('')
@@ -36,35 +39,16 @@ export default function SendModalButton() {
     // Ensure amount is valid
     if (!recipientAddress || (amount && !isNaN(Number(amount)))) {
       try {
+        const asseType = 'xoc'
+        const assetAddress = assetContractFactory(asseType)
+        const talentCenterAddress = talentCenterContractFactory(asseType)
+
         // Start the transaction
         await transferXOC({
-          address: '0xa411c9Aa00E020e4f88Bc19996d29c5B7ADB4ACf',
-          abi: [
-            // ERC20 ABI
-            {
-              constant: false,
-              inputs: [
-                {
-                  name: '_to',
-                  type: 'address',
-                },
-                {
-                  name: '_value',
-                  type: 'uint256',
-                },
-              ],
-              name: 'transfer',
-              outputs: [
-                {
-                  name: '',
-                  type: 'bool',
-                },
-              ],
-              type: 'function',
-            },
-          ],
+          address: assetAddress as Address,
+          abi: ERC20ABI,
           functionName: 'transfer',
-          args: [recipientAddress, parseEther(amount)],
+          args: [talentCenterAddress as Address, parseEther(amount)],
         })
 
         toast.info('Transferencia solicitada...')

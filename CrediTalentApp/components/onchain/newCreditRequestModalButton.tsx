@@ -31,7 +31,7 @@ export function NewCreditRequestModal({
   const [selectedToken, setSelectedToken] = useState("xoc"); // Default to $xoc
   const [isLoading, setIsLoading] = useState(false); // Add loading state
   const { address: accountAddress } = useAccount();
-  const {  primaryWallet } = useDynamicContext()
+  const {  primaryWallet, user } = useDynamicContext()
   const { writeContractAsync, data:  isSuccess } = useWriteContract()
 
   const createLoanApplicationDataFromTalentPassport = (
@@ -59,6 +59,8 @@ export function NewCreditRequestModal({
       walletId: walletId,
       applicantId: parseInt(talentPassport?.user?.id ?? '', 10), // Assuming user.id is a string, convert to number
       creditLineId: creditLineId,
+      userName: user?.username ?? '-',
+      userPictureUrl: talentPassportData?.user?.profile_picture_url ?? '',
     };
 
     return loanApplicationData;
@@ -90,9 +92,10 @@ export function NewCreditRequestModal({
         selectedToken,
         talentPassportData, // Type assertion if needed
       );
+      console.log('🚀 ~ handleRequestCreditLine ~ dataToSend:', dataToSend)
 
       // TODO: Confirm con daigaro 
-       await writeLoanApplication()
+      await writeLoanApplication()
 
       const applicationId = await createLoanApplication(dataToSend);
 
