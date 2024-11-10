@@ -1,18 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { getCreditInfo } from "../controllers/creditalentApi";
-import { CreditInfoType } from "@/types/creditalent-responses";
-import { fetchTalentPassport } from "../controllers/talentProtocolApi";
-import { TalentPassportType } from "@/types/talent-protocol-responses";
-import { NewCreditRequestModal } from "./onchain/newCreditRequestModalButton";
 import { CREDIT_STATUS_LABEL, DEFAULT_CREDIT_STATUS_LABEL } from "@/lib/constants";
 
 export default function Component() {
@@ -94,11 +88,10 @@ export default function Component() {
             <div className="text-center text-sm text-blue-600">
               {creditInfoQueryStatus === "success" &&
                 (creditInfoData?.approvedLoanApplications?.length > 0 ? (
-                  "No Approved Loan Applications"
+                  `No Approved Loan Applications`
                 ) : (
                   <div>
-                    No Approved Loan Applications yet, use "Request a new Credit
-                    Line" to access your credit
+                    {'No Approved Loan Applications yet, use &quot;Request a new CreditLine&quot; to access your credit'}
                   </div>
                 ))}
             </div>

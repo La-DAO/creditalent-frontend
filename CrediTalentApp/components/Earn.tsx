@@ -2,9 +2,6 @@
 
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchLoanApplications } from "@/controllers/creditalentApi";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +18,6 @@ import { LoanApplicationExtended } from "@/types/creditalent-responses";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function Component() {
-  const [amount, setAmount] = React.useState("");
   const { data: loanApplicationsData } = useQuery({
     queryKey: ["loanApplicationsKey"],
     queryFn: () => fetchLoanApplications(),
