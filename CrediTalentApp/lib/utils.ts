@@ -2,6 +2,7 @@ import { AssetType } from "@/types/creditalent-responses"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Address, pad, toHex } from "viem"
+import  XOC_ERC20ABI  from '@/components/onchain/abis/xoc/Erc20'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -23,11 +24,22 @@ export const assetContractFactory = (assetType: AssetType): Address => {
 
   try {
     if (assetType === 'xoc' && NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT) {
-      return NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT as Address
+      return { 
+        address: NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT as Address,
+        abi: XOC_ERC20ABI
+      }
     } else if ('usdc' && NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT) {
-      return NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT as Address
+      return { 
+        address: NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT as Address,
+        abi: 
+      
+      }
     } else if ('talent' && NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT) {
-      return NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT as Address
+      return { 
+        address: NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT as Address,
+        abi: 
+      
+      }
     }
   } catch(e) {
     throw Error('Address Asset Not valid')

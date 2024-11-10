@@ -16,7 +16,7 @@ import { CreateLoanApplicationData } from "@/types/creditalent-responses";
 import { TalentPassportType } from "@/types/talent-protocol-responses";
 import { useAccount, useWriteContract } from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import CreditTalentCenterABI from "./abis/CreditTalentCenter";
+import CreditTalentCenterABI from "./abis/xoc/CreditTalentCenter";
 import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
 
 export function NewCreditRequestModal({

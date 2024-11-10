@@ -7,8 +7,8 @@ import {
   useWriteContract,
 } from 'wagmi'
 import { useBalanceOf } from '@/hooks/useBalanceOf'
-import { ERC20ABI } from '@/components/onchain/abis/erc20'
-import CreditTalentCenterABI from '@/components/onchain/abis/CreditTalentCenter'
+import { ERC20ABI } from '@/components/onchain/abis/xoc/Erc20'
+import CreditTalentCenterABI from '@/components/onchain/abis/xoc/CreditTalentCenter'
 import {
   Dialog,
   DialogContent,
@@ -99,23 +99,7 @@ export default function UnderwriterModal() {
     setAction(newAction)
   }
 
-  // Function to handle approval
-  const handleApproval = async () => {
-    const xocAmount = parseFloat(amount.toString()) || 0
-
-    try {
-      await approveERC20({
-        abi: ERC20ABI,
-        address: xocContract,
-        functionName: 'approve',
-        args: [spenderAddress, parseEther(xocAmount.toString())], // Convert amount to 18 decimals
-      })
-      console.log('Approval transaction submitted')
-    } catch (err) {
-      console.error('Error approving XOC tokens:', err)
-      setXocError('Error approving XOC tokens')
-    }
-  }
+  
 
   // Function to handle deposit or withdraw
   const handleDeposit = async () => {
@@ -226,9 +210,7 @@ export default function UnderwriterModal() {
         <button
           className="w-full rounded-lg bg-primary px-6 py-2 text-white"
           onClick={() => {
-            if (requiresApproval) {
-              handleApproval() // Call handleApproval when approval is needed
-            } else if (action === 'Deposit' && isSuccessApproveTxReceipt) {
+            if (action === 'Deposit' && isSuccessApproveTxReceipt) {
               handleDeposit() // Call handleDeposit if deposit is selected
             } else if (action === 'Withdraw' && !xocError) {
               handleWithdrawal() // Call handleWithdrawal if withdraw is selected

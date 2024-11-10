@@ -15,7 +15,7 @@ import { Label } from '../ui/label'
 import Link from 'next/link'
 import { ArrowUpRightIcon, ExternalLinkIcon, LoaderCircle } from 'lucide-react'
 import { toast } from 'sonner'
-import { ERC20ABI } from './abis/erc20'
+import { ERC20ABI } from './abis/xoc/Erc20'
 import { assetContractFactory, talentCenterContractFactory } from '@/lib/utils'
 import { AssetType } from "@/types/creditalent-responses"
 

@@ -13,13 +13,13 @@ import {
   TableRow,
 } from "./ui/table";
 import { Avatar } from "@coinbase/onchainkit/identity";
-import { LoanApplicationExtended } from "@/types/creditalent-responses";
+import { AssetType, LoanApplicationExtended } from "@/types/creditalent-responses";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
 
-export default function Component() {
+export default function Component({ selectedAssetType }: {selectedAssetType?: AssetType}) {
   const [amount, setAmount] = useState("");
   const { data: loanApplicationsData } = useQuery({
     queryKey: ["loanApplicationsKey"],
@@ -132,7 +132,7 @@ export default function Component() {
                         <div className="flex items-center gap-x-2 py-1 text-left">
                           <Avatar>
                             <AvatarImage
-                              src={item.userPictureUrl}
+                              src={item.userPictureUrl ?? ''}
                             />
                             <AvatarFallback>
                               {item.userName}

@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { CreditTalentCenterABI } from '@/components/onchain/abis/CreditTalentCenter'
+import { CreditTalentCenterABI } from '@/components/onchain/abis/xoc/CreditTalentCenter'
 
 export function DenyModalButton({
   loanApplication,
