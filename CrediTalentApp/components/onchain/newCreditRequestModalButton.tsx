@@ -31,8 +31,8 @@ export function NewCreditRequestModal({
   const [selectedToken, setSelectedToken] = useState("xoc"); // Default to $xoc
   const [isLoading, setIsLoading] = useState(false); // Add loading state
   const { address: accountAddress } = useAccount();
-  const { user, primaryWallet } = useDynamicContext()
-  const { writeContractAsync, data: hash, isSuccess } = useWriteContract()
+  const {  primaryWallet } = useDynamicContext()
+  const { writeContractAsync, data:  isSuccess } = useWriteContract()
 
   const createLoanApplicationDataFromTalentPassport = (
     walletId: string, // Wallet Id
