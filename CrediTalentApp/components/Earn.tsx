@@ -132,13 +132,13 @@ export default function Component() {
                         <div className="flex items-center gap-x-2 py-1 text-left">
                           <Avatar>
                             <AvatarImage
-                              src={item.applicant?.profilePictureUrl}
+                              src={item.userPictureUrl}
                             />
                             <AvatarFallback>
-                              {item.applicant?.name}
+                              {item.userName}
                             </AvatarFallback>
                           </Avatar>
-                          {item?.applicant?.name}
+                          {item?.userName}
                         </div>
                       </TableCell>
                       <TableCell className="">
