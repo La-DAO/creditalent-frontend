@@ -64,67 +64,6 @@ export default function Component() {
     <main className="mx-auto max-w-[1400px] space-y-8 p-8">
       <div className="grid gap-8 lg:grid-cols-3">
         <BorrowAvailableCredit/>
-        {/* <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">
-              Available Credit
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="rounded-lg bg-gray-50 p-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-gray-400" />
-                <span className="text-sm">Haven&apos;t started</span>
-              </div>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span>1. Talent Available:</span>
-                  <span>0</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>2. USDC Available:</span>
-                  <span>0</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>2. XOC Available:</span>
-                  <span>0</span>
-                </div>
-              </div>
-            </div>
-
-            <Tabs defaultValue="borrow" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 p-1">
-                <TabsTrigger
-                  value="borrow"
-                  className="data-[state=active]:bg-[#FF4405] data-[state=active]:text-white"
-                >
-                  Borrow
-                </TabsTrigger>
-                <TabsTrigger
-                  value="repay"
-                  className="data-[state=active]:bg-[#FF4405] data-[state=active]:text-white"
-                >
-                  Repay
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="borrow" className="space-y-4 pt-4">
-                <div className="text-sm text-muted-foreground">
-                  Specify the quantity to borrow
-                </div>
-                <div className="flex items-center gap-4">
-                  <Input placeholder="$0" className="text-lg" />
-                  <div className="flex h-10 min-w-[80px] items-center justify-center rounded-md border bg-gray-50 px-3">
-                    XOC
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-
-            <div className="text-center text-sm text-blue-600">
-              No Approved Loan Applications
-            </div>
-          </CardContent>
-        </Card> */}
 
         <Card className="bg-white shadow-sm">
           <CardHeader>
