@@ -3,7 +3,7 @@ export type CreateLoanApplicationData = {
   amount: number
   availableCreditLine: number
   status?: string
-  tokenType: string
+  assetType: string
   xocScore: number
   builderScore: number
   nominationsReceived: number
@@ -99,4 +99,17 @@ type UnderwriterProfile = {
   createdAt: Date
   updatedAt: Date
   passportProfileId: number
+}
+
+
+export type CreditInfoType = {
+  walletId: string
+  xoc: CreditInfo
+  talent: CreditInfo
+  usdc: CreditInfo
+}
+
+type CreditInfo = {
+  amount: number
+  status:string
 }

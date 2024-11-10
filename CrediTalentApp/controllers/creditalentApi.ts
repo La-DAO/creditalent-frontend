@@ -54,3 +54,31 @@ export const createLoanApplication = async (
     return null
   }
 }
+
+export const getCreditInfo = async (
+  walletAddress: string,
+) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CREDITALENT_API_URL}/api/credit-info`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ walletId: walletAddress }),
+    })
+
+    // Check if the response is successful
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to create loan application')
+    }
+    const data = await response.json()
+    console.log('🚀 ~ getCreditInfo:', data)
+
+    return data
+  } catch (error) {
+    console.log(error)
+    console.error('Error getCreditInfo:', error)
+    return null
+  }
+}

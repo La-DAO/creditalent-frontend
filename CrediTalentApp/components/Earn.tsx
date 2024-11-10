@@ -102,7 +102,7 @@ export default function Component() {
                     <TableCell className="text-left">{`$${item?.amount?.toFixed(
                       2
                     )}`}</TableCell>
-                    <TableCell className="text-center">100 XOC</TableCell>
+                    <TableCell className="text-center"> {item?.assetType}</TableCell>
 
                     <TableCell className="text-center">
                       {item?.builderScore}

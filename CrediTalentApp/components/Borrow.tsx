@@ -21,6 +21,7 @@ import { createLoanApplication } from "../controllers/creditalentApi";
 import { CreateLoanApplicationData } from "@/types/creditalent-responses";
 import { TalentPassportType } from "@/types/talent-protocol-responses";
 import { NewCreditRequestModal } from "./onchain/newCreditRequestModalButton";
+import BorrowAvailableCredit from "./BorrowAvailableCredit";
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
@@ -62,7 +63,8 @@ export default function Component() {
   return (
     <main className="mx-auto max-w-[1400px] space-y-8 p-8">
       <div className="grid gap-8 lg:grid-cols-3">
-        <Card className="bg-white shadow-sm">
+        <BorrowAvailableCredit/>
+        {/* <Card className="bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl font-medium">
               Available Credit
@@ -122,7 +124,7 @@ export default function Component() {
               No Approved Loan Applications
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="bg-white shadow-sm">
           <CardHeader>

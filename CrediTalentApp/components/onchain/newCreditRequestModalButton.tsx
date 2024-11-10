@@ -7,36 +7,40 @@ import { toast } from 'sonner'
 import { createLoanApplication } from '@/controllers/creditalentApi'
 import { CreateLoanApplicationData } from '@/types/creditalent-responses'
 import { TalentPassportType } from '@/types/talent-protocol-responses'
+import { useAccount, useReadContract, useWriteContract } from 'wagmi'
 
 export function NewCreditRequestModal( {talentPassportData, creditAllowed }: { talentPassportData: TalentPassportType | undefined | null, creditAllowed: number } ) {
   const [isOpen, setIsOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [selectedToken, setSelectedToken] = useState('xoc') // Default to $xoc
   const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const { address: accountAddress } = useAccount()
 
 
   const createLoanApplicationDataFromTalentPassport = (
+    walletId: string, // Wallet Id
     talentPassport: TalentPassportType,
     amount: number, // You'll need to get the amount from somewhere (e.g., user input)
     availableCreditLine: number, // Get available credit line
     creditLineId: number, // Get credit line id
-    tokenType: string // Token ttype
+    tokenType: string, // Token ttype
   ): CreateLoanApplicationData => {
     const totalFollowerCount = talentPassport.passport_socials.reduce(
       (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
       0
     );
+
     
     const loanApplicationData: CreateLoanApplicationData = {
       amount,
       availableCreditLine,
-      tokenType,
+      assetType: tokenType,
       status: "PENDING", // Default status
       xocScore: -1, // Or whatever default value you use
       builderScore: talentPassport.score,
       nominationsReceived: talentPassport.nominations_received_count,
       followers: totalFollowerCount,
-      walletId: talentPassport.main_wallet,
+      walletId: walletId,
       applicantId: parseInt(talentPassport.user.id, 10), // Assuming user.id is a string, convert to number
       creditLineId: creditLineId,
     };
@@ -57,18 +61,23 @@ export function NewCreditRequestModal( {talentPassportData, creditAllowed }: { t
         return
       }
      
+      if (accountAddress == null) {
+        toast.warning('user not logged')
+        return
+      } 
+
       const dataToSend = createLoanApplicationDataFromTalentPassport(
+        accountAddress!,
         talentPassportData! , // Type assertion if needed
         +amount,
         creditAllowed,
         creditLineId,
         selectedToken,
       );
-      console.log('🚀 ~ handleRequestCreditLine ~ dataToSend:', dataToSend)
 
       const response = await createLoanApplication(dataToSend);
       console.log("🚀 ~ handleRequestCreditLine ~ response:", response);
-      // ... the rest of your handleApprove logic
+      setIsOpen(false)
     } catch (error) {
       // ... error handling ...
     } finally {
@@ -100,13 +109,13 @@ export function NewCreditRequestModal( {talentPassportData, creditAllowed }: { t
           <div>
             <Label htmlFor="token">Token</Label>
             <div className="flex gap-4">
-              <label htmlFor="stalent" className="flex items-center gap-2">
+              <label htmlFor="talent" className="flex items-center gap-2">
                 <input
                   type="radio"
-                  id="stalent"
-                  value="stalent"
-                  checked={selectedToken === 'stalent'}
-                  onChange={() => setSelectedToken('stalent')}
+                  id="talent"
+                  value="talent"
+                  checked={selectedToken === 'talent'}
+                  onChange={() => setSelectedToken('talent')}
                 />
                 $talent
               </label>
@@ -136,7 +145,7 @@ export function NewCreditRequestModal( {talentPassportData, creditAllowed }: { t
             <Button
               className="bg-[#FF4405] hover:bg-[#FF4405]/90"
               onClick={handleRequestCreditLine}
-              disabled={!amount}
+              disabled={!amount || isLoading}
             >
               Request
             </Button>
