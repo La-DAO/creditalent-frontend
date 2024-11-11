@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { rejectedCreditInfo } from "@/controllers/creditalentApi";
+import { saveRejectedCreditInfo } from "@/controllers/creditalentApi";
 import {
   AssetType,
   LoanApplicationExtended,
@@ -46,10 +46,9 @@ export function DenyModalButton({
       return;
     }
 
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const talentCenterContract = talentCenterContractFactory(assetType!);
-
       const applicationId = loanApplication?.id as number;
 
       // Start the transaction
@@ -60,16 +59,13 @@ export function DenyModalButton({
         args: [loanApplication.walletId, applicationId, reason],
       });
 
-      if (isSuccessDenyTx) {
-        await rejectedCreditInfo(
-          applicationId,
-          loanApplication.walletId,
-          assetType,
-          reason
-        );
-        toast.success("Success elimination");
-      }
-
+      await saveRejectedCreditInfo(
+        applicationId,
+        loanApplication.walletId,
+        assetType,
+        reason
+      );
+      toast.success("Success elimination");
     } catch (error) {
       console.error("Deny failed:", error);
       toast.error(

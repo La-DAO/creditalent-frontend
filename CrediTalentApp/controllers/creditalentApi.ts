@@ -113,7 +113,7 @@ export const saveApproveCreditInfo = async (
     return null
   }
 }
-export const rejectedCreditInfo = async (
+export const saveRejectedCreditInfo = async (
   applicationId: number, 
   walletId: string,
   assetType: string,

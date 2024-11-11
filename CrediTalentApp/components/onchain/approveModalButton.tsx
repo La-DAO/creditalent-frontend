@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +48,7 @@ export function ApproveModalButton({
       return;
     }
     try {
+      setIsLoading(true);
       const talentCenterContract = talentCenterContractFactory(assetType!);
       const assetAmount = parseFloat(amount) || 0;
       const amountInWei = BigInt(assetAmount * 1e18);
@@ -55,18 +56,18 @@ export function ApproveModalButton({
         "115792089237316195423570985008687907853269984665640564039457584007913129639935"
       );
       const applicationId = loanApplication?.id as number
-      setIsLoading(true);
       const txTalentCenter = await approveCredit({
         address: talentCenterContract.address,
         abi: talentCenterContract.abi,
         functionName: "approveCredit",
         args: [
           loanApplication.walletId,
-          +(loanApplication?.applicantId!),
+          +(loanApplication?.applicantId),
           amountInWei,
           maxUint256BigNumber,
         ],
       });
+      console.log('🚀 ~ handleApprove ~ txTalentCenter:', txTalentCenter)
 
       if (isSuccessApproveTx) {
         await saveApproveCreditInfo(applicationId, loanApplication.walletId, assetType, +amount)

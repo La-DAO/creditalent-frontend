@@ -18,8 +18,9 @@ export default function ApplytoUnderWriteButton({
   const { writeContractAsync: approveERC20, data: hash } = useWriteContract();
 
   const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx } =
-    useWaitForTransactionReceipt({ hash });
-
+  useWaitForTransactionReceipt({ hash });
+  
+  console.log('🚀 ~ isSuccessApproveTx:', isSuccessApproveTx)
   const [isLoading, setIsLoading] = useState(false);
 
   // Function to handle deposit or withdraw
@@ -33,7 +34,6 @@ export default function ApplytoUnderWriteButton({
       const erc20Contract = erc20ContractFactory(assetType!);
       const assetAmount = parseFloat(`${amount}`) || 0;
       const amountInWei = BigInt(assetAmount * 1e18);
-      console.log("🚀 ~ handleApplytoUnderWrite ~ amountInWei:", amountInWei);
 
       setIsLoading(true);
       const txERC20 = await approveERC20({
@@ -42,6 +42,7 @@ export default function ApplytoUnderWriteButton({
         functionName: "approve",
         args: [talentCenterContract.address, amountInWei], // Convert amount to 18 decimals
       });
+      console.log('🚀 ~ handleApplytoUnderWrite ~ txERC20:', txERC20)
 
       const txTalentCenter = await applytoUnderWrite({
         abi: talentCenterContract.abi,
@@ -49,6 +50,7 @@ export default function ApplytoUnderWriteButton({
         functionName: "applyToUnderwrite",
         args: [amountInWei],
       });
+      console.log('🚀 ~ handleApplytoUnderWrite ~ txTalentCenter:', txTalentCenter)
       toast.success("Success");
     } catch (err) {
       console.error("Error executing deposit:", err);

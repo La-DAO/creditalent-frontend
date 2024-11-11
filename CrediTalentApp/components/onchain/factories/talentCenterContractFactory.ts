@@ -225,7 +225,8 @@ export const talentCenterContractFactory = (assetType: AssetType): { address: Ad
       }
     }
   } catch (e) {
-    throw Error('Address Talent Center Not valid')
+    console.log('🚀 ~ talentCenterContractFactory ~ e:', e)
+    throw Error('Address Talent Center Not valid ')
   }
   throw Error('Address Talent Center require setup')
 }

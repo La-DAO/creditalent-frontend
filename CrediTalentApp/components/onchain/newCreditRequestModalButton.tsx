@@ -21,7 +21,6 @@ import { useAccount, useWriteContract, useClient, useWaitForTransactionReceipt }
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
 import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
-import { Address, Client } from "viem";
 import { readContract } from "viem/actions";
 
 export function NewCreditRequestModal({
@@ -41,9 +40,7 @@ export function NewCreditRequestModal({
   const talentCenterContract = talentCenterContractFactory(selectedToken as AssetType);
   const client = useClient();
   const {
-    isLoading: isLoadingTransaction,
     isSuccess: isSuccessTransaction,
-    error: transactionError,
   } = useWaitForTransactionReceipt({
     hash: transactionHash, // Pass the transaction hash here
   });
@@ -111,9 +108,7 @@ export function NewCreditRequestModal({
 
       await writeLoanApplication();
       console.log('🚀 ~ handleRequestCreditLine ~ isSuccessTransaction:', isSuccessTransaction)
-      applicationId = await readLoanApplication();
-      console.log('🚀 ~ AFTER ~ applicationId:', applicationId)
-
+      
       if (isSuccessTransaction) {
         applicationId = await readLoanApplication();
         console.log('🚀 ~ handleRequestCreditLine ~ applicationId:', applicationId)
@@ -161,13 +156,15 @@ export function NewCreditRequestModal({
       }
       const inputApplyToCredit =
         "0x0000000000000000000000000000000000000000000000000000000000000002";
-
-      const hash = await writeContractAsync({
+      
+        const hash = await writeContractAsync({
         address: talentCenterContract.address,
         abi: talentCenterContract.abi,
         functionName: "applyToCredit",
         args: [inputApplyToCredit], //TODO:  `${convertToBytes32(loanApplicationId)}`
       });
+      console.log('🚀 ~ writeLoanApplication ~ hash:', hash)
+
     } catch (error) {
       if (`${error}`.includes("applicationAlreadyExists")) {
         throw Error("Application already exists");
