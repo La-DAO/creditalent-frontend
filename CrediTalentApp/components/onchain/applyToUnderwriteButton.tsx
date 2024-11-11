@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Address, parseEther } from "viem";
-import { useAccount, useWriteContract } from "wagmi";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { Button } from "../ui/button";
 import { AssetType } from "@/types/creditalent-responses";
 import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
@@ -16,8 +15,11 @@ export default function ApplytoUnderWriteButton({
   amount: number;
 }) {
   const { writeContractAsync: applytoUnderWrite } = useWriteContract();
-  const { writeContractAsync: approveERC20, data: approveHash } =
-    useWriteContract();
+  const { writeContractAsync: approveERC20, data: hash } = useWriteContract();
+
+  const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx } =
+    useWaitForTransactionReceipt({ hash });
+
   const [isLoading, setIsLoading] = useState(false);
 
   // Function to handle deposit or withdraw
@@ -40,17 +42,13 @@ export default function ApplytoUnderWriteButton({
         functionName: "approve",
         args: [talentCenterContract.address, amountInWei], // Convert amount to 18 decimals
       });
-      console.log("🚀 ~ handleApplytoUnderWrite ~ txERC20:", txERC20);
+
       const txTalentCenter = await applytoUnderWrite({
         abi: talentCenterContract.abi,
         address: talentCenterContract.address,
         functionName: "applyToUnderwrite",
         args: [amountInWei],
       });
-      console.log(
-        "🚀 ~ handleApplytoUnderWrite ~ txTalentCenter:",
-        txTalentCenter
-      );
       toast.success("Success");
     } catch (err) {
       console.error("Error executing deposit:", err);
@@ -69,7 +67,7 @@ export default function ApplytoUnderWriteButton({
           handleApplytoUnderWrite();
         }}
       >
-        {isLoading ? (
+        {isLoading || isLoadingApproveTx ? (
           <Loader2 className="animate-spin h-5 w-5 mr-2" /> // Display Loader2 while loading
         ) : (
           "Depositar"
