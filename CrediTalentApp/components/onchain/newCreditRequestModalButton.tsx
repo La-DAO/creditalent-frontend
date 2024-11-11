@@ -17,7 +17,12 @@ import {
   CreateLoanApplicationData,
 } from "@/types/creditalent-responses";
 import { TalentPassportType } from "@/types/talent-protocol-responses";
-import { useAccount, useWriteContract, useClient, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useWriteContract,
+  useClient,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
 import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
@@ -37,11 +42,8 @@ export function NewCreditRequestModal({
   const { address: accountAddress } = useAccount();
   const { primaryWallet, user } = useDynamicContext();
   const { writeContractAsync, data: transactionHash } = useWriteContract();
-  const talentCenterContract = talentCenterContractFactory(selectedToken as AssetType);
   const client = useClient();
-  const {
-    isSuccess: isSuccessTransaction,
-  } = useWaitForTransactionReceipt({
+  const { isSuccess: isSuccessTransaction } = useWaitForTransactionReceipt({
     hash: transactionHash, // Pass the transaction hash here
   });
 
@@ -82,11 +84,11 @@ export function NewCreditRequestModal({
       setIsLoading(true);
 
       let applicationId = await readLoanApplication();
-      console.log('🚀 ~ BEFORE ~ applicationId:', applicationId)
-      
+      console.log("🚀 ~ BEFORE ~ applicationId:", applicationId);
+
       if (applicationId !== null) {
         toast.error("Application already exists");
-        return
+        return;
       }
 
       const creditLineId = 100; // TODO: REMOVE HARDCODED
@@ -105,14 +107,19 @@ export function NewCreditRequestModal({
         return;
       }
 
-
       await writeLoanApplication();
-      console.log('🚀 ~ handleRequestCreditLine ~ isSuccessTransaction:', isSuccessTransaction)
-      
+      console.log(
+        "🚀 ~ handleRequestCreditLine ~ isSuccessTransaction:",
+        isSuccessTransaction
+      );
+
       if (isSuccessTransaction) {
         applicationId = await readLoanApplication();
-        console.log('🚀 ~ handleRequestCreditLine ~ applicationId:', applicationId)
-  
+        console.log(
+          "🚀 ~ handleRequestCreditLine ~ applicationId:",
+          applicationId
+        );
+
         if (applicationId) {
           const dataToSend = createLoanApplicationDataFromTalentPassport(
             accountAddress!,
@@ -121,13 +128,13 @@ export function NewCreditRequestModal({
             creditAllowed,
             creditLineId,
             selectedToken,
-            talentPassportData, // Type assertion if needed
+            talentPassportData // Type assertion if needed
           );
-          console.log('🚀 ~ handleRequestCreditLine ~ dataToSend:', dataToSend)
-    
+          console.log("🚀 ~ handleRequestCreditLine ~ dataToSend:", dataToSend);
+
           await createLoanApplication(dataToSend);
         } else {
-          toast.error('Application Id not valid')
+          toast.error("Application Id not valid");
         }
       }
     } catch (error) {
@@ -156,15 +163,17 @@ export function NewCreditRequestModal({
       }
       const inputApplyToCredit =
         "0x0000000000000000000000000000000000000000000000000000000000000002";
-      
-        const hash = await writeContractAsync({
+      const talentCenterContract = talentCenterContractFactory(
+        selectedToken as AssetType
+      );
+
+      const hash = await writeContractAsync({
         address: talentCenterContract.address,
         abi: talentCenterContract.abi,
         functionName: "applyToCredit",
         args: [inputApplyToCredit], //TODO:  `${convertToBytes32(loanApplicationId)}`
       });
-      console.log('🚀 ~ writeLoanApplication ~ hash:', hash)
-
+      console.log("🚀 ~ writeLoanApplication ~ hash:", hash);
     } catch (error) {
       if (`${error}`.includes("applicationAlreadyExists")) {
         throw Error("Application already exists");
@@ -178,6 +187,9 @@ export function NewCreditRequestModal({
       toast.error("Client required");
       return null;
     }
+    const talentCenterContract = talentCenterContractFactory(
+      selectedToken as AssetType
+    );
 
     const [idHex] = await readContract(client!, {
       abi: talentCenterContract.abi, // This assumes your abi is correctly typed
@@ -186,12 +198,11 @@ export function NewCreditRequestModal({
       args: [accountAddress],
     });
 
-    const id = parseInt(idHex, 16); 
+    const id = parseInt(idHex, 16);
 
-    if (id === 0)
-     return null
+    if (id === 0) return null;
     else {
-      return id
+      return id;
     }
   }
   return (
