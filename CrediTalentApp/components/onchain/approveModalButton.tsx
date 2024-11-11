@@ -83,35 +83,6 @@ export function ApproveModalButton({
     }
   };
 
-  useEffect(() => {
-    async function updateLoanApp() {
-      if (!loanApplication.id) {
-        return toast.error(
-          "No existe id para esta solicitud, contactar al admin"
-        );
-      }
-      // TODO: CRIS
-      // const updatedLoanApp = await updateLoanApplication({
-      //   id: loanApplication.id,
-      //   status: 'APPROVED',
-      // })
-
-      // if (updatedLoanApp.status === 'APPROVED') {
-      //   toast.success('Solicitud aprobada exitosamente')
-      // } else {
-      //   toast.warning(
-      //     'No se ha actualizado la solicitud en la base de datos, contactar al admin',
-      //   )
-      // }
-
-      setIsLoading(false);
-    }
-
-    if (isSuccessApproveTx) {
-      updateLoanApp();
-    }
-  }, [isSuccessApproveTx, loanApplication.id]);
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
