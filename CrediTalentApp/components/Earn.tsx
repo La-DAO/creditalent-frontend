@@ -13,13 +13,16 @@ import {
   TableRow,
 } from "./ui/table";
 import { Avatar } from "@coinbase/onchainkit/identity";
-import { LoanApplicationExtended } from "@/types/creditalent-responses";
+import { AssetType, LoanApplicationExtended } from "@/types/creditalent-responses";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
+import ApplytoUnderWriteButton from "./onchain/applyToUnderwriteButton";
+import { ApproveModalButton } from "./onchain/approveModalButton";
+import { DenyModalButton } from "./onchain/denyModalButton";
 
-export default function Component() {
+export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetType}) {
   const [amount, setAmount] = useState("");
   const { data: loanApplicationsData } = useQuery({
     queryKey: ["loanApplicationsKey"],
@@ -80,10 +83,8 @@ export default function Component() {
                     <span>0</span>
                   </div>
                 </div>
-
-                <Button className="w-full bg-[#ff4405] hover:bg-[#ff4405]/90 text-white">
-                  Depositar
-                </Button>
+                {/* DEPOSITAR */}
+                <ApplytoUnderWriteButton assetType={selectedAssetType} amount={+(amount ?? 0)} />
               </div>
             </CardContent>
           </Card>
@@ -132,13 +133,13 @@ export default function Component() {
                         <div className="flex items-center gap-x-2 py-1 text-left">
                           <Avatar>
                             <AvatarImage
-                              src={item.applicant?.profilePictureUrl}
+                              src={item.userPictureUrl ?? ''}
                             />
                             <AvatarFallback>
-                              {item.applicant?.name}
+                              {item.userName}
                             </AvatarFallback>
                           </Avatar>
-                          {item?.applicant?.name}
+                          {item?.userName}
                         </div>
                       </TableCell>
                       <TableCell className="">
@@ -168,8 +169,8 @@ export default function Component() {
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center gap-2">
-                          {/* <ApproveModalButton loanApplication={item} />
-                        <DenyModalButton loanApplication={item} /> */}
+                          <ApproveModalButton loanApplication={item} assetType={selectedAssetType} />
+                          <DenyModalButton loanApplication={item} assetType={selectedAssetType}/> 
                         </div>
                       </TableCell>
                     </TableRow>

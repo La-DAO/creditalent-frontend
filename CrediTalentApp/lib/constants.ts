@@ -12,4 +12,4 @@ export const CREDIT_STATUS_LABEL = {
   'PENDING': "Waiting for approval",
 }
 
-export const DEFAULT_CREDIT_STATUS_LABEL ="Haven't started"
+export const DEFAULT_CREDIT_STATUS_LABEL = "Haven't started"

@@ -3,6 +3,8 @@ export type CreateLoanApplicationData = {
   amount: number
   availableCreditLine: number
   status?: string
+  userName?: string
+  userPictureUrl?: string
   assetType: string
   xocScore: number
   builderScore: number
@@ -113,3 +115,6 @@ type CreditInfo = {
   amount: number
   status:string
 }
+
+
+export  type AssetType = 'xoc' | 'usdc' | 'talent'

@@ -1,9 +1,15 @@
+import { isPassportTalentRequired } from '@/lib/utils'
 import { TalentPassportType } from '../types/talent-protocol-responses'
 
 export const fetchIdentityScore = async (
   walletAddress: string,
 ): Promise<number | null> => {
   const apiKey = process.env.NEXT_PUBLIC_TALENT_API_KEY
+
+  if (!isPassportTalentRequired) {
+    console.log('Passport talent disabled!' )
+    return null
+  }
 
   if (!apiKey) {
     throw new Error('API key is not defined')
@@ -40,9 +46,15 @@ export const fetchTalentPassport = async (
 ): Promise<TalentPassportType | null> => {
   const apiKey = process.env.NEXT_PUBLIC_TALENT_API_KEY
 
+  if (!isPassportTalentRequired) {
+    console.log('Passport talent disabled!', ) 
+    return null
+  }
+
   if (!apiKey) {
     throw new Error('API key is not defined')
   }
+
 
   try {
     const response = await fetch(
