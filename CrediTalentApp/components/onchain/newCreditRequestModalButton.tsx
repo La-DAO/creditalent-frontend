@@ -12,12 +12,17 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { createLoanApplication } from "@/controllers/creditalentApi";
-import { CreateLoanApplicationData } from "@/types/creditalent-responses";
+import {
+  AssetType,
+  CreateLoanApplicationData,
+} from "@/types/creditalent-responses";
 import { TalentPassportType } from "@/types/talent-protocol-responses";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWriteContract, useClient, useWaitForTransactionReceipt } from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import CreditTalentCenterABI from "./abis/xoc/CreditTalentCenter";
 import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
+import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
+import { Address, Client } from "viem";
+import { readContract } from "viem/actions";
 
 export function NewCreditRequestModal({
   talentPassportData,
@@ -31,16 +36,26 @@ export function NewCreditRequestModal({
   const [selectedToken, setSelectedToken] = useState("xoc"); // Default to $xoc
   const [isLoading, setIsLoading] = useState(false); // Add loading state
   const { address: accountAddress } = useAccount();
-  const {  primaryWallet, user } = useDynamicContext()
-  const { writeContractAsync, data:  isSuccess } = useWriteContract()
+  const { primaryWallet, user } = useDynamicContext();
+  const { writeContractAsync, data: transactionHash } = useWriteContract();
+  const talentCenterContract = talentCenterContractFactory(selectedToken as AssetType);
+  const client = useClient();
+  const {
+    isLoading: isLoadingTransaction,
+    isSuccess: isSuccessTransaction,
+    error: transactionError,
+  } = useWaitForTransactionReceipt({
+    hash: transactionHash, // Pass the transaction hash here
+  });
 
   const createLoanApplicationDataFromTalentPassport = (
     walletId: string, // Wallet Id
     amount: number, // You'll need to get the amount from somewhere (e.g., user input)
+    applicationId: number, // Application Id from contract
     availableCreditLine: number, // Get available credit line
     creditLineId: number, // Get credit line id
     tokenType: string, // Token ttype
-    talentPassport?: TalentPassportType | null,
+    talentPassport?: TalentPassportType | null
   ): CreateLoanApplicationData => {
     const totalFollowerCount = talentPassport?.passport_socials?.reduce(
       (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
@@ -57,10 +72,10 @@ export function NewCreditRequestModal({
       nominationsReceived: talentPassport?.nominations_received_count ?? -1,
       followers: totalFollowerCount ?? -1,
       walletId: walletId,
-      applicantId: parseInt(talentPassport?.user?.id ?? '', 10), // Assuming user.id is a string, convert to number
+      applicantId: applicationId,
       creditLineId: creditLineId,
-      userName: user?.username ?? '-',
-      userPictureUrl: talentPassportData?.user?.profile_picture_url ?? '',
+      userName: user?.username ?? "-",
+      userPictureUrl: talentPassportData?.user?.profile_picture_url ?? "",
     };
 
     return loanApplicationData;
@@ -68,9 +83,18 @@ export function NewCreditRequestModal({
   const handleRequestCreditLine = async () => {
     try {
       setIsLoading(true);
+
+      let applicationId = await readLoanApplication();
+      console.log('🚀 ~ BEFORE ~ applicationId:', applicationId)
+      
+      if (applicationId !== null) {
+        toast.error("Application already exists");
+        return
+      }
+
       const creditLineId = 100; // TODO: REMOVE HARDCODED
       if (!creditLineId) {
-        // Check if creditLineId is defined
+        toast.error("Credit line not exist");
         return;
       }
 
@@ -84,71 +108,95 @@ export function NewCreditRequestModal({
         return;
       }
 
-      const dataToSend = createLoanApplicationDataFromTalentPassport(
-        accountAddress!,
-        +amount,
-        creditAllowed,
-        creditLineId,
-        selectedToken,
-        talentPassportData, // Type assertion if needed
-      );
-      console.log('🚀 ~ handleRequestCreditLine ~ dataToSend:', dataToSend)
 
-      // TODO: Confirm con daigaro 
-      await writeLoanApplication()
+      await writeLoanApplication();
+      console.log('🚀 ~ handleRequestCreditLine ~ isSuccessTransaction:', isSuccessTransaction)
+      applicationId = await readLoanApplication();
+      console.log('🚀 ~ AFTER ~ applicationId:', applicationId)
 
-      const applicationId = await createLoanApplication(dataToSend);
-
-      if (applicationId == null) {
-        console.log("applicationId not valid ");
-        return;
+      if (isSuccessTransaction) {
+        applicationId = await readLoanApplication();
+        console.log('🚀 ~ handleRequestCreditLine ~ applicationId:', applicationId)
+  
+        if (applicationId) {
+          const dataToSend = createLoanApplicationDataFromTalentPassport(
+            accountAddress!,
+            +amount,
+            applicationId,
+            creditAllowed,
+            creditLineId,
+            selectedToken,
+            talentPassportData, // Type assertion if needed
+          );
+          console.log('🚀 ~ handleRequestCreditLine ~ dataToSend:', dataToSend)
+    
+          await createLoanApplication(dataToSend);
+        } else {
+          toast.error('Application Id not valid')
+        }
       }
-
     } catch (error) {
       toast.error("Ups.." + error);
       // ... error handling ...
     } finally {
       setIsLoading(false);
-      setIsOpen(false)
+      setIsOpen(false);
     }
   };
   async function writeLoanApplication() {
-    console.log('Antes de write contract')
+    console.log("Antes de write contract");
 
     try {
       if (primaryWallet?.connector.supportsNetworkSwitching()) {
-        toast.info('Cambia tu red a Base Sepolia')
-        await primaryWallet.switchNetwork(84532)
-        console.log('Success! Network switched')
+        toast.info("Cambia tu red a Base Sepolia");
+        await primaryWallet.switchNetwork(84532);
+        console.log("Success! Network switched");
       }
 
-      const currentChainId = await primaryWallet?.getNetwork()
+      const currentChainId = await primaryWallet?.getNetwork();
       if (currentChainId !== 84532) {
         return toast.error(
-          'Red no soportada, cambia de red y vuelva a intentar',
-        )
+          "Red no soportada, cambia de red y vuelva a intentar"
+        );
       }
-      const inputApplyToCredit = '0x0000000000000000000000000000000000000000000000000000000000000002'
+      const inputApplyToCredit =
+        "0x0000000000000000000000000000000000000000000000000000000000000002";
 
       const hash = await writeContractAsync({
-        address: '0x0E44B48406b5E7Bba4E6d089542719Cb2577d444',
-        abi: CreditTalentCenterABI,
-        functionName: 'applyToCredit',
+        address: talentCenterContract.address,
+        abi: talentCenterContract.abi,
+        functionName: "applyToCredit",
         args: [inputApplyToCredit], //TODO:  `${convertToBytes32(loanApplicationId)}`
-      })
-
-      if (isSuccess) {
-        console.log('Application successful:', hash)
-        
-      }
+      });
     } catch (error) {
-      if (`${error}`.includes('applicationAlreadyExists')){
-        throw Error("Application already exists")
+      if (`${error}`.includes("applicationAlreadyExists")) {
+        throw Error("Application already exists");
       }
     }
-    console.log('despues de write contract')
+    console.log("despues de write contract");
   }
+  // TODO: read loan application
+  async function readLoanApplication(): Promise<number | null> {
+    if (!client) {
+      toast.error("Client required");
+      return null;
+    }
 
+    const [idHex] = await readContract(client!, {
+      abi: talentCenterContract.abi, // This assumes your abi is correctly typed
+      address: talentCenterContract.address,
+      functionName: "applicationInfo",
+      args: [accountAddress],
+    });
+
+    const id = parseInt(idHex, 16); 
+
+    if (id === 0)
+     return null
+    else {
+      return id
+    }
+  }
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>

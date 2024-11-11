@@ -26,14 +26,14 @@ export default function ApplytoUnderWriteButton({
       console.error("Unknown Asset type: ", assetType);
       return;
     }
-    const talentCenterContract = talentCenterContractFactory(assetType!);
-    const erc20Contract = erc20ContractFactory(assetType!);
-    const assetAmount = parseFloat(`${amount}`) || 0;
-    const amountInWei = BigInt(assetAmount * 1e18);
-    console.log("🚀 ~ handleApplytoUnderWrite ~ amountInWei:", amountInWei);
-
-    setIsLoading(true);
     try {
+      const talentCenterContract = talentCenterContractFactory(assetType!);
+      const erc20Contract = erc20ContractFactory(assetType!);
+      const assetAmount = parseFloat(`${amount}`) || 0;
+      const amountInWei = BigInt(assetAmount * 1e18);
+      console.log("🚀 ~ handleApplytoUnderWrite ~ amountInWei:", amountInWei);
+
+      setIsLoading(true);
       const txERC20 = await approveERC20({
         abi: erc20Contract.abi,
         address: erc20Contract.address,

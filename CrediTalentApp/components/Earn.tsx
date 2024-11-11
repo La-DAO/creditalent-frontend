@@ -19,6 +19,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
 import ApplytoUnderWriteButton from "./onchain/applyToUnderwriteButton";
+import { ApproveModalButton } from "./onchain/approveModalButton";
 
 export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetType}) {
   const [amount, setAmount] = useState("");
@@ -167,8 +168,9 @@ export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetTy
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center gap-2">
-                          {/* <ApproveModalButton loanApplication={item} />
-                        <DenyModalButton loanApplication={item} /> */}
+                          {
+                           <ApproveModalButton loanApplication={item} assetType={selectedAssetType} />}
+                        {/* <DenyModalButton loanApplication={item} /> } */}
                         </div>
                       </TableCell>
                     </TableRow>
