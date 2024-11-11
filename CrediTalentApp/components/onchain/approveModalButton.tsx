@@ -20,8 +20,7 @@ import {
 } from "@/types/creditalent-responses";
 import { Loader2 } from "lucide-react"; // Import Loader2 from lucide-react
 import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
-// import { ERC20ABI } from '@/components/onchain/abis/erc20'
-// import { parseUnits, parseEther, maxInt256 } from 'viem' // Import parseEther
+import { saveApproveCreditInfo } from "@/controllers/creditalentApi";
 
 export function ApproveModalButton({
   loanApplication,
@@ -55,30 +54,24 @@ export function ApproveModalButton({
       const maxUint256BigNumber = BigInt(
         "115792089237316195423570985008687907853269984665640564039457584007913129639935"
       );
-
-      const args = [
-        loanApplication.walletId,
-        +loanApplication?.applicantId!,
-        amountInWei,
-        maxUint256BigNumber,
-      ];
-      console.log('🚀 ~ handleApprove ~ args:', args)
+      const applicationId = loanApplication?.id as number
       setIsLoading(true);
-      // const txTalentCenter = await approveCredit({
-      //   address: talentCenterContract.address,
-      //   abi: talentCenterContract.abi,
-      //   functionName: "approveCredit",
-      //   args: [
-      //     loanApplication.walletId,
-      //     +(loanApplication?.applicantId!),
-      //     amountInWei,
-      //     maxUint256BigNumber,
-      //   ],
-      // });
-      // console.log('🚀 ~ handleApprove ~ txTalentCenter:', txTalentCenter)
-      // console.log('🚀 ~ handleApprove ~ txTalentCenter:', txTalentCenter)
-      // TODO: update DB
-      toast.success("Solicitud de aprobación enviada!"); // Success message
+      const txTalentCenter = await approveCredit({
+        address: talentCenterContract.address,
+        abi: talentCenterContract.abi,
+        functionName: "approveCredit",
+        args: [
+          loanApplication.walletId,
+          +(loanApplication?.applicantId!),
+          amountInWei,
+          maxUint256BigNumber,
+        ],
+      });
+
+      if (isSuccessApproveTx) {
+        await saveApproveCreditInfo(applicationId, loanApplication.walletId, assetType, +amount)
+        toast.success("Solicitud de aprobación enviada!"); // Success message
+      }
       setIsOpen(false);
     } catch (error) {
       console.error("Approve failed:", error);
