@@ -18,8 +18,9 @@ import { AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
+import ApplytoUnderWriteButton from "./onchain/applyToUnderwriteButton";
 
-export default function Component({ selectedAssetType }: {selectedAssetType?: AssetType}) {
+export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetType}) {
   const [amount, setAmount] = useState("");
   const { data: loanApplicationsData } = useQuery({
     queryKey: ["loanApplicationsKey"],
@@ -80,10 +81,8 @@ export default function Component({ selectedAssetType }: {selectedAssetType?: As
                     <span>0</span>
                   </div>
                 </div>
-
-                <Button className="w-full bg-[#ff4405] hover:bg-[#ff4405]/90 text-white">
-                  Depositar
-                </Button>
+                {/* DEPOSITAR */}
+                <ApplytoUnderWriteButton assetType={selectedAssetType} amount={+(amount ?? 0)} />
               </div>
             </CardContent>
           </Card>

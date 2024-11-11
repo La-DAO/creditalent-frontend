@@ -3,12 +3,6 @@ import { Address } from "viem"
 
 
 export const erc20ContractFactory = (assetType: AssetType): { address: Address; abi: any } => {
-    const {
-        NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT,
-        NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT,
-        NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT
-    } = process.env
-
     // SETUP ABIS
     const TALENT_ERC20_ABI: [] = [] // TODO: SETUP TALENT 
     const USDC_ERC20_ABI: [] = [] // TODO: SETUP USDC
@@ -181,23 +175,20 @@ export const erc20ContractFactory = (assetType: AssetType): { address: Address; 
         { stateMutability: "payable", type: "receive" },
     ]
 
-
-
     try {
-        if (assetType === 'xoc' && NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT) {
+        if (assetType === 'xoc' && process.env.NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT) {
             return {
-                address: NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT as Address,
+                address: process.env.NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT as Address,
                 abi: XOC_ERC20_ABI
             }
-        } else if ('usdc' && NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT) {
+        } else if ('usdc' && process.env.NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT) {
             return {
-                address: NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT as Address,
+                address: process.env.NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT as Address,
                 abi: USDC_ERC20_ABI
-
             }
-        } else if ('talent' && NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT) {
+        } else if ('talent' && process.env.NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT) {
             return {
-                address: NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT as Address,
+                address: process.env.NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT as Address,
                 abi: TALENT_ERC20_ABI
             }
         }

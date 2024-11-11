@@ -2,13 +2,6 @@ import { AssetType } from "@/types/creditalent-responses"
 import { Address } from "viem"
 
 export const talentCenterContractFactory = (assetType: AssetType): { address: Address; abi: any } => {
-
-    const {
-        NEXT_PUBLIC_BASE_XOC_TALENT_CENTER_CONTRACT,
-        NEXT_PUBLIC_BASE_USDC_TALENT_CENTER_CONTRACT,
-        NEXT_PUBLIC_BASE_TALENT_TALENT_CENTER_CONTRACT
-    } = process.env
-
     const TALENT_TALENT_CENTER_ABI: [] = [] // TODO: SETUP TALENT 
     const USDC_TALENT_CENTER_ABI: [] = [] // TODO: SETUP USDC
     const XOC_TALENT_CENTER_ABI = [
@@ -211,19 +204,19 @@ export const talentCenterContractFactory = (assetType: AssetType): { address: Ad
       ];
       
     try {
-        if (assetType === 'xoc' && NEXT_PUBLIC_BASE_XOC_TALENT_CENTER_CONTRACT) {
+        if (assetType === 'xoc' && process.env.NEXT_PUBLIC_BASE_XOC_TALENT_CENTER_CONTRACT) {
             return {
-                address: NEXT_PUBLIC_BASE_XOC_TALENT_CENTER_CONTRACT as Address,
+                address: process.env.NEXT_PUBLIC_BASE_XOC_TALENT_CENTER_CONTRACT as Address,
                 abi: XOC_TALENT_CENTER_ABI 
             }
-        } else if ('usdc' && NEXT_PUBLIC_BASE_USDC_TALENT_CENTER_CONTRACT) {
+        } else if ('usdc' && process.env.NEXT_PUBLIC_BASE_USDC_TALENT_CENTER_CONTRACT) {
             return {
-                address: NEXT_PUBLIC_BASE_USDC_TALENT_CENTER_CONTRACT as Address,
+                address: process.env.NEXT_PUBLIC_BASE_USDC_TALENT_CENTER_CONTRACT as Address,
                 abi: USDC_TALENT_CENTER_ABI
             }
-        } else if ('talent' && NEXT_PUBLIC_BASE_TALENT_TALENT_CENTER_CONTRACT) {
+        } else if ('talent' && process.env.NEXT_PUBLIC_BASE_TALENT_TALENT_CENTER_CONTRACT) {
             return {
-                address: NEXT_PUBLIC_BASE_TALENT_TALENT_CENTER_CONTRACT as Address,
+                address: process.env.NEXT_PUBLIC_BASE_TALENT_TALENT_CENTER_CONTRACT as Address,
                 abi: TALENT_TALENT_CENTER_ABI
             }
         }
