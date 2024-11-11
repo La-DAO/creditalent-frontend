@@ -1,8 +1,12 @@
 import { AssetType } from "@/types/creditalent-responses"
-import { Address } from "viem"
+import { Abi, Address } from "viem"
 
 
-export const erc20ContractFactory = (assetType: AssetType): { address: Address; abi: any } => {
+export const erc20ContractFactory = (assetType: AssetType): { address: Address; abi?: any[] } => {
+    const XOC_ERC20_CONTRACT = "0x4eE906B7135bDBdfC83FE40b8f2156C99FCB64c2"
+    const USDC_ERC20_CONTRACT = "" // TODO: SETUP USDC
+    const TALENT_ERC20_CONTRACT = "" // TODO: SETUP TALENT
+
     // SETUP ABIS
     const TALENT_ERC20_ABI: [] = [] // TODO: SETUP TALENT 
     const USDC_ERC20_ABI: [] = [] // TODO: SETUP USDC
@@ -176,24 +180,24 @@ export const erc20ContractFactory = (assetType: AssetType): { address: Address; 
     ]
 
     try {
-        if (assetType === 'xoc' && process.env.NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT) {
+        if (assetType === 'xoc' && XOC_ERC20_CONTRACT) {
             return {
-                address: process.env.NEXT_PUBLIC_BASE_XOC_ERC20_CONTRACT as Address,
+                address: XOC_ERC20_CONTRACT as Address,
                 abi: XOC_ERC20_ABI
             }
-        } else if ('usdc' && process.env.NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT) {
+        } else if (assetType === 'usdc' && USDC_ERC20_CONTRACT) {
             return {
-                address: process.env.NEXT_PUBLIC_BASE_USDC_ERC20_CONTRACT as Address,
+                address: USDC_ERC20_CONTRACT as Address,
                 abi: USDC_ERC20_ABI
             }
-        } else if ('talent' && process.env.NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT) {
+        } else if (assetType === 'talent' && TALENT_ERC20_CONTRACT) {
             return {
-                address: process.env.NEXT_PUBLIC_BASE_TALENT_ERC20_CONTRACT as Address,
+                address: TALENT_ERC20_CONTRACT as Address,
                 abi: TALENT_ERC20_ABI
             }
         }
     } catch (e) {
-        throw Error('Address Asset Not valid')
+        throw Error('Address Asset Not valid error: ' + e)
     }
     throw Error('Address Asset require setup')
 }

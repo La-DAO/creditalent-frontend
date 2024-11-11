@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import React, { useEffect, useState } from 'react'
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { Button } from '@/components/ui/button'
+import React, { useEffect, useState } from "react";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,63 +10,79 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from 'sonner'
-import { CreditTalentCenterABI } from '@/components/onchain/abis/xoc/CreditTalentCenter'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { saveRejectedCreditInfo } from "@/controllers/creditalentApi";
+import {
+  AssetType,
+  LoanApplicationExtended,
+} from "@/types/creditalent-responses";
+import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
 
 export function DenyModalButton({
   loanApplication,
+  assetType,
 }: {
-  loanApplication: LoanApplicationExtended
+  assetType?: AssetType;
+  loanApplication: LoanApplicationExtended;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [reason, setReason] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [reason, setReason] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const {
     data: hash,
     writeContractAsync: denyApplication,
     isPending: isDenyPending,
-  } = useWriteContract()
+  } = useWriteContract();
 
   const { isLoading: isLoadingDenyTx, isSuccess: isSuccessDenyTx } =
-    useWaitForTransactionReceipt({
-      hash,
-    })
+    useWaitForTransactionReceipt({ hash });
 
   const handleDeny = async () => {
-    setIsLoading(true)
+    if (!assetType) {
+      console.error("Unknown Asset type: ", assetType);
+      return;
+    }
+
     try {
-      const CREDIT_TALENT_CENTER_CONTRACT =
-        '0x0E44B48406b5E7Bba4E6d089542719Cb2577d444'
+      setIsLoading(true);
+      const talentCenterContract = talentCenterContractFactory(assetType!);
+      const applicationId = loanApplication?.id as number;
 
       // Start the transaction
       await denyApplication({
-        address: CREDIT_TALENT_CENTER_CONTRACT,
-        abi: CreditTalentCenterABI,
-        functionName: 'rejectCredit',
-        args: [loanApplication.walletId, loanApplication.applicant.id, reason],
-      })
-      // TODO: update DB
+        address: talentCenterContract.address,
+        abi: talentCenterContract.abi,
+        functionName: "rejectCredit",
+        args: [loanApplication.walletId, applicationId, reason],
+      });
 
-      toast.info('Solicitud de denegación enviada...')
-      setIsOpen(false)
+      await saveRejectedCreditInfo(
+        applicationId,
+        loanApplication.walletId,
+        assetType,
+        reason
+      );
+      toast.success("Success elimination");
     } catch (error) {
-      console.error('Deny failed:', error)
+      console.error("Deny failed:", error);
       toast.error(
-        'Hubo un error al denegar la solicitud, por favor intenta de nuevo',
-      )
-      setIsLoading(false)
+        "Hubo un error al denegar la solicitud, por favor intenta de nuevo"
+      );
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
     }
-  }
+  };
 
   useEffect(() => {
     async function updateLoanApp() {
       if (!loanApplication.id) {
         return toast.error(
-          'No existe id para esta solicitud, contactar al admin',
-        )
+          "No existe id para esta solicitud, contactar al admin"
+        );
       }
       // TODO: CRIS
       // const updatedLoanApp = await updateLoanApplication({
@@ -82,13 +98,13 @@ export function DenyModalButton({
       //   )
       // }
 
-      setIsLoading(false)
+      setIsLoading(false);
     }
 
     if (isSuccessDenyTx) {
-      updateLoanApp()
+      updateLoanApp();
     }
-  }, [isSuccessDenyTx, loanApplication.id])
+  }, [isSuccessDenyTx, loanApplication.id]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -106,13 +122,13 @@ export function DenyModalButton({
             Denegar Solicitud
           </DialogTitle>
           <DialogDescription className="text-center text-base">
-            ¿Estás seguro que quieres denegar la solicitud de{' '}
-            {loanApplication.applicant.name}?
+            ¿Estás seguro que quieres denegar la solicitud de{" "}
+            {loanApplication.userName}?
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 grid gap-4">
-          {' '}
+          {" "}
           {/* Use grid for layout */}
           <div>
             <Label htmlFor="reason">Motivo del Rechazo</Label>
@@ -133,7 +149,7 @@ export function DenyModalButton({
               {isDenyPending || isLoadingDenyTx || isLoading ? (
                 <span>Rechazando...</span>
               ) : (
-                'Rechazar'
+                "Rechazar"
               )}
             </Button>
             <Button variant="outline" onClick={() => setIsOpen(false)}>
@@ -158,5 +174,5 @@ export function DenyModalButton({
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
