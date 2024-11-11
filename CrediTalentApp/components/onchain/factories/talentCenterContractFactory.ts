@@ -1,7 +1,7 @@
 import { AssetType } from "@/types/creditalent-responses"
 import { Address } from "viem"
 
-export const talentCenterContractFactory = (assetType: AssetType): { address: Address; abi: any } => {
+export const talentCenterContractFactory = (assetType: AssetType) => {
   const XOC_TALENT_CENTER_CONTRACT = "0x0E44B48406b5E7Bba4E6d089542719Cb2577d444"
   const TALENT_TALENT_CENTER_CONTRACT = "" // TODO: SETUP 
   const USDC_TALENT_CENTER_CONTRACT = ""  // TODO: SETUP TALENT

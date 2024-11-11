@@ -1,8 +1,8 @@
 import { AssetType } from "@/types/creditalent-responses"
-import { Abi, Address } from "viem"
+import { Address } from "viem"
 
 
-export const erc20ContractFactory = (assetType: AssetType): { address: Address; abi?: any[] } => {
+export const erc20ContractFactory = (assetType: AssetType) => {
     const XOC_ERC20_CONTRACT = "0x4eE906B7135bDBdfC83FE40b8f2156C99FCB64c2"
     const USDC_ERC20_CONTRACT = "" // TODO: SETUP USDC
     const TALENT_ERC20_CONTRACT = "" // TODO: SETUP TALENT
