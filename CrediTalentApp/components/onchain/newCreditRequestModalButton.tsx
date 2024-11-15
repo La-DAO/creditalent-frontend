@@ -41,59 +41,31 @@ export function NewCreditRequestModal({
   const [isLoading, setIsLoading] = useState(false); // Add loading state
   const { address: accountAddress } = useAccount();
   const { primaryWallet, user } = useDynamicContext();
-  const { writeContractAsync, data: transactionHash } = useWriteContract();
-  const client = useClient();
-  const { isSuccess: isSuccessTransaction } = useWaitForTransactionReceipt({
-    hash: transactionHash, // Pass the transaction hash here
+  const { writeContractAsync, data: applyToCreditHash } = useWriteContract();
+  const {
+    isLoading: isLoadingApplyToCredit,
+    isSuccess: isSuccessApplyToCredit,
+  } = useWaitForTransactionReceipt({
+    hash: applyToCreditHash,
   });
+  const client = useClient();
 
-  const createLoanApplicationDataFromTalentPassport = (
-    walletId: string, // Wallet Id
-    amount: number, // You'll need to get the amount from somewhere (e.g., user input)
-    applicationId: number, // Application Id from contract
-    availableCreditLine: number, // Get available credit line
-    creditLineId: number, // Get credit line id
-    tokenType: string, // Token ttype
-    talentPassport?: TalentPassportType | null
-  ): CreateLoanApplicationData => {
-    const totalFollowerCount = talentPassport?.passport_socials?.reduce(
-      (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
-      0
-    );
-
-    const loanApplicationData: CreateLoanApplicationData = {
-      amount,
-      availableCreditLine,
-      assetType: tokenType,
-      status: "PENDING", // Default status
-      xocScore: -1, // Or whatever default value you use
-      builderScore: talentPassport?.score ?? -1,
-      nominationsReceived: talentPassport?.nominations_received_count ?? -1,
-      followers: totalFollowerCount ?? -1,
-      walletId: walletId,
-      applicantId: applicationId,
-      creditLineId: creditLineId,
-      userName: user?.username ?? "-",
-      userPictureUrl: talentPassportData?.user?.profile_picture_url ?? "",
-    };
-
-    return loanApplicationData;
-  };
   const handleRequestCreditLine = async () => {
     try {
       setIsLoading(true);
 
-      let applicationId = await readLoanApplication();
-      console.log("🚀 ~ BEFORE ~ applicationId:", applicationId);
+      const applicationId = await readLoanApplication();
+      console.log(
+        "🚀 ~ handleRequestCreditLine ~ applicationId:",
+        applicationId
+      );
 
-      if (applicationId !== null) {
-        toast.error("Application already exists");
+      if (!selectedToken) {
+        toast.error("Ups require, please select a asset");
         return;
       }
-
-      const creditLineId = 100; // TODO: REMOVE HARDCODED
-      if (!creditLineId) {
-        toast.error("Credit line not exist");
+      if (applicationId !== null) {
+        toast.error("Application already exists");
         return;
       }
 
@@ -107,36 +79,13 @@ export function NewCreditRequestModal({
         return;
       }
 
-      await writeLoanApplication();
+      const txHash = await writeLoanApplication();
+      
+      console.log('🚀 ~ handleRequestCreditLine ~ txHash:', txHash)
       console.log(
-        "🚀 ~ handleRequestCreditLine ~ isSuccessTransaction:",
-        isSuccessTransaction
+        "🚀 ~ handleRequestCreditLine ~ isSuccessApplyToCredit:",
+        isSuccessApplyToCredit
       );
-
-      if (isSuccessTransaction) {
-        applicationId = await readLoanApplication();
-        console.log(
-          "🚀 ~ handleRequestCreditLine ~ applicationId:",
-          applicationId
-        );
-
-        if (applicationId) {
-          const dataToSend = createLoanApplicationDataFromTalentPassport(
-            accountAddress!,
-            +amount,
-            applicationId,
-            creditAllowed,
-            creditLineId,
-            selectedToken,
-            talentPassportData // Type assertion if needed
-          );
-          console.log("🚀 ~ handleRequestCreditLine ~ dataToSend:", dataToSend);
-
-          await createLoanApplication(dataToSend);
-        } else {
-          toast.error("Application Id not valid");
-        }
-      }
     } catch (error) {
       toast.error("Ups.." + error);
       // ... error handling ...
@@ -145,6 +94,7 @@ export function NewCreditRequestModal({
       setIsOpen(false);
     }
   };
+
   async function writeLoanApplication() {
     console.log("Antes de write contract");
 
@@ -174,6 +124,7 @@ export function NewCreditRequestModal({
         args: [inputApplyToCredit], //TODO:  `${convertToBytes32(loanApplicationId)}`
       });
       console.log("🚀 ~ writeLoanApplication ~ hash:", hash);
+      return hash;
     } catch (error) {
       if (`${error}`.includes("applicationAlreadyExists")) {
         throw Error("Application already exists");
@@ -181,7 +132,7 @@ export function NewCreditRequestModal({
     }
     console.log("despues de write contract");
   }
-  // TODO: read loan application
+
   async function readLoanApplication(): Promise<number | null> {
     if (!client) {
       toast.error("Client required");
@@ -189,6 +140,10 @@ export function NewCreditRequestModal({
     }
     const talentCenterContract = talentCenterContractFactory(
       selectedToken as AssetType
+    );
+    console.log(
+      "🚀 ~ readLoanApplication ~ talentCenterContract:",
+      talentCenterContract
     );
 
     const [idHex] = await readContract(client!, {
@@ -205,6 +160,62 @@ export function NewCreditRequestModal({
       return id;
     }
   }
+
+  const createLoanApplicationDataFromTalentPassport = (
+    walletId: string, // Wallet Id
+    amount: number, // You'll need to get the amount from somewhere (e.g., user input)
+    applicationId: number, // Application Id from contract
+    availableCreditLine: number, // Get available credit line
+    tokenType: string, // Token ttype
+    talentPassport?: TalentPassportType | null
+  ): CreateLoanApplicationData => {
+    const totalFollowerCount = talentPassport?.passport_socials?.reduce(
+      (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
+      0
+    );
+
+    const loanApplicationData: CreateLoanApplicationData = {
+      amount,
+      availableCreditLine,
+      assetType: tokenType,
+      status: "PENDING", // Default status
+      xocScore: -1, // Or whatever default value you use
+      builderScore: talentPassport?.score ?? -1,
+      nominationsReceived: talentPassport?.nominations_received_count ?? -1,
+      followers: totalFollowerCount ?? -1,
+      walletId: walletId,
+      applicantId: applicationId,
+      userName: user?.username ?? "-",
+      userPictureUrl: talentPassportData?.user?.profile_picture_url ?? "",
+    };
+
+    return loanApplicationData;
+  };
+
+  // HANDLE SUCCESS TX APPLY TO CREDIT
+  // TODO: CRIS - use event for confirm transaction and save on DB
+  if (!isLoadingApplyToCredit && isSuccessApplyToCredit) {
+    console.log("🟢 SUCCESS TX!");
+    readLoanApplication().then((applicationId) => {
+      console.log("🚀 ~ applicationId:", applicationId);
+      if (!applicationId || applicationId === null) {
+        console.log("Unknown applicationId:", applicationId);
+      }
+
+      const dataToSend = createLoanApplicationDataFromTalentPassport(
+        accountAddress!,
+        +amount,
+        +applicationId,
+        creditAllowed,
+        selectedToken,
+        talentPassportData // Type assertion if needed
+      );
+      console.log("🚀 ~ dataToSend:", dataToSend);
+
+      createLoanApplication(dataToSend);
+    }); //
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>

@@ -59,6 +59,7 @@ export function DenyModalButton({
         args: [loanApplication.walletId, applicationId, reason],
       });
 
+      // TODO: CRIS - use event for confirm transaction and save on DB
       await saveRejectedCreditInfo(
         applicationId,
         loanApplication.walletId,
