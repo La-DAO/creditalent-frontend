@@ -67,12 +67,11 @@ export function ApproveModalButton({
           maxUint256BigNumber,
         ],
       });
-      console.log('🚀 ~ handleApprove ~ txTalentCenter:', txTalentCenter)
 
-      if (isSuccessApproveTx) {
-        await saveApproveCreditInfo(applicationId, loanApplication.walletId, assetType, +amount)
-        toast.success("Solicitud de aprobación enviada!"); // Success message
-      }
+      // TODO: CRIS - use event for confirm transaction and save on DB
+      // if (isSuccessApproveTx) {
+      await saveApproveCreditInfo(applicationId, loanApplication.walletId, assetType, +amount)
+      toast.success("Solicitud de aprobación enviada!"); // Success message
       setIsOpen(false);
     } catch (error) {
       console.error("Approve failed:", error);

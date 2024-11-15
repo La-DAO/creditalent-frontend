@@ -12,7 +12,6 @@ export type CreateLoanApplicationData = {
   followers: number
   walletId: string
   applicantId: number
-  creditLineId: number
   reviewedById?: number
 }
 
@@ -26,7 +25,6 @@ export type LoanApplication = {
   followers: number
   walletId: string
   applicantId: number
-  creditLineId: number
   reviewedById?: number
 }
 
