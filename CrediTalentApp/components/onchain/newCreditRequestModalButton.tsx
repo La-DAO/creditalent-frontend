@@ -22,14 +22,11 @@ import {
   useWriteContract,
   useClient,
   useWaitForTransactionReceipt,
-  useWatchContractEvent,
 } from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
 import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
 import { readContract } from "viem/actions";
-import { Address } from "viem";
-import { useTransactionConfirmations } from "wagmi";
 
 export function NewCreditRequestModal({
   talentPassportData,
@@ -48,7 +45,6 @@ export function NewCreditRequestModal({
   const {
     isLoading: isLoadingApplyToCredit,
     isSuccess: isSuccessApplyToCredit,
-    error,
   } = useWaitForTransactionReceipt({
     hash: applyToCreditHash,
   });
@@ -58,7 +54,7 @@ export function NewCreditRequestModal({
     try {
       setIsLoading(true);
 
-      let applicationId = await readLoanApplication();
+      const applicationId = await readLoanApplication();
       console.log(
         "🚀 ~ handleRequestCreditLine ~ applicationId:",
         applicationId
@@ -84,7 +80,8 @@ export function NewCreditRequestModal({
       }
 
       const txHash = await writeLoanApplication();
-
+      
+      console.log('🚀 ~ handleRequestCreditLine ~ txHash:', txHash)
       console.log(
         "🚀 ~ handleRequestCreditLine ~ isSuccessApplyToCredit:",
         isSuccessApplyToCredit
@@ -201,7 +198,7 @@ export function NewCreditRequestModal({
     console.log("🟢 SUCCESS TX!");
     readLoanApplication().then((applicationId) => {
       console.log("🚀 ~ applicationId:", applicationId);
-      if (!applicationId  || applicationId === null ) {
+      if (!applicationId || applicationId === null) {
         console.log("Unknown applicationId:", applicationId);
       }
 

@@ -67,8 +67,10 @@ export function ApproveModalButton({
           maxUint256BigNumber,
         ],
       });
-
+      
       // TODO: CRIS - use event for confirm transaction and save on DB
+      console.log('🚀 ~ handleApprove ~ txTalentCenter:', txTalentCenter)
+      console.log('🚀 ~ isSuccessApproveTx:', isSuccessApproveTx)
       // if (isSuccessApproveTx) {
       await saveApproveCreditInfo(applicationId, loanApplication.walletId, assetType, +amount)
       toast.success("Solicitud de aprobación enviada!"); // Success message
