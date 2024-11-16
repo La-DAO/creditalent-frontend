@@ -74,7 +74,10 @@ export function useBalanceOf({
   // Effect to handle updates to data, error, and loading state
   useEffect(() => {
     if (decimalsData) {
-      setDecimals(Number(decimalsData)) // Set the decimals from the contract
+      setDecimals(Number(decimalsData));
+    } else if (decimalsError) {
+      console.error('Error fetching decimals, falling back to 18.');
+      setDecimals(18);
     }
 
     if (balanceError || decimalsError) {
