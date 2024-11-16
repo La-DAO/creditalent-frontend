@@ -21,13 +21,58 @@ import { Input } from "./ui/input";
 import ApplytoUnderWriteButton from "./onchain/applyToUnderwriteButton";
 import { ApproveModalButton } from "./onchain/approveModalButton";
 import { DenyModalButton } from "./onchain/denyModalButton";
+import { useBalance } from "wagmi";
+import { useAccount } from "wagmi";
 
-export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetType}) {
+// Utility function to format amounts
+function formatAmount(amount: number, decimals: number = 18): string {
+  const adjustedAmount = amount / Math.pow(10, decimals); // Adjust for token decimals
+  return adjustedAmount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetType }) {
   const [amount, setAmount] = useState("");
+
+  // Fetch the connected user's wallet address
+  const { address: walletAddress } = useAccount();
+
+  // Map asset types to token addresses
+  const assetTypeToAddress: Record<AssetType, `0x${string}`> = {
+    xoc: "0x4eE906B7135bDBdfC83FE40b8f2156C99FCB64c2",
+    usdc: "0x03e5f3a1ae8faea9d8ec56a3ed1e708cfede1970",
+    talent: "0xaAE22ccff30E636BDa436D54E5efea72227B2868",
+  };
+
+  const assetTypeDecimals: Record<AssetType, number> = {
+    xoc: 18,
+    usdc: 6,
+    talent: 18,
+  };
+
+  const tokenAddress = selectedAssetType
+    ? assetTypeToAddress[selectedAssetType.toLowerCase() as AssetType]
+    : undefined;
+
+  // Use the `useBalance` hook
+  const { data: balanceData, isError, isLoading } = useBalance({
+    address: walletAddress,
+    token: tokenAddress,
+    chainId: 84532, // Base Sepolia chain
+  });
+
+  // Fetch loan applications
   const { data: loanApplicationsData } = useQuery({
     queryKey: ["loanApplicationsKey"],
     queryFn: () => fetchLoanApplications(),
   });
+
+  const decimals = selectedAssetType
+  ? assetTypeDecimals[selectedAssetType.toLowerCase() as AssetType] || 18
+  : 18;
+
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -75,8 +120,16 @@ export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetTy
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Balance:</span>
-                    <span>0 MAX</span>
+                  <span className="text-gray-500">Balance:</span>
+                    <span>
+                      {isLoading
+                        ? "Cargando..."
+                        : isError
+                        ? "Error"
+                        : `${formatAmount(Number(balanceData?.value || 0), decimals)} ${
+                            selectedAssetType?.toUpperCase()
+                          }`}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Allowance:</span>
@@ -133,7 +186,7 @@ export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetTy
                         <div className="flex items-center gap-x-2 py-1 text-left">
                           <Avatar>
                             <AvatarImage
-                              src={item.userPictureUrl ?? ''}
+                              src={item.userPictureUrl ?? ""}
                             />
                             <AvatarFallback>
                               {item.userName}
@@ -170,7 +223,7 @@ export default function Earn({ selectedAssetType }: {selectedAssetType?: AssetTy
                       <TableCell>
                         <div className="flex justify-center gap-2">
                           <ApproveModalButton loanApplication={item} assetType={selectedAssetType} />
-                          <DenyModalButton loanApplication={item} assetType={selectedAssetType}/> 
+                          <DenyModalButton loanApplication={item} assetType={selectedAssetType} />
                         </div>
                       </TableCell>
                     </TableRow>
