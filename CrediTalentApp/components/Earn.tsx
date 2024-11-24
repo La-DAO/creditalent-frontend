@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchLoanApplications } from "@/controllers/creditalentApi";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { fetchLoanApplications } from '@/controllers/creditalentApi';
+import { useQuery } from '@tanstack/react-query';
 import {
   Table,
   TableBody,
@@ -11,18 +11,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { Avatar } from "@coinbase/onchainkit/identity";
-import { AssetType, LoanApplicationExtended } from "@/types/creditalent-responses";
-import { AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
-import { Input } from "./ui/input";
-import ApplytoUnderWriteButton from "./onchain/applyToUnderwriteButton";
-import { ApproveModalButton } from "./onchain/approveModalButton";
-import { DenyModalButton } from "./onchain/denyModalButton";
-import { useBalance } from "wagmi";
-import { useAccount } from "wagmi";
+} from './ui/table';
+import { Avatar } from '@coinbase/onchainkit/identity';
+import {
+  AssetType,
+  LoanApplicationExtended,
+} from '@/types/creditalent-responses';
+import { AvatarFallback, AvatarImage } from './ui/avatar';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Input } from './ui/input';
+import ApplytoUnderWriteButton from './onchain/applyToUnderwriteButton';
+import { ApproveModalButton } from './onchain/approveModalButton';
+import { DenyModalButton } from './onchain/denyModalButton';
+import { useAccount, useBalance, useReadContract } from 'wagmi';
+import CrediTalentCenter from './onchain/abis/CrediTalentCenter';
 
 // Utility function to format amounts
 function formatAmount(amount: number, decimals: number = 18): string {
@@ -33,17 +36,21 @@ function formatAmount(amount: number, decimals: number = 18): string {
   });
 }
 
-export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetType }) {
-  const [amount, setAmount] = useState("");
+export default function Earn({
+  selectedAssetType,
+}: {
+  selectedAssetType?: AssetType;
+}) {
+  const [amount, setAmount] = useState('');
 
   // Fetch the connected user's wallet address
   const { address: walletAddress } = useAccount();
 
   // Map asset types to token addresses
   const assetTypeToAddress: Record<AssetType, `0x${string}`> = {
-    xoc: "0x4eE906B7135bDBdfC83FE40b8f2156C99FCB64c2",
-    usdc: "0x03e5f3a1ae8faea9d8ec56a3ed1e708cfede1970",
-    talent: "0xaAE22ccff30E636BDa436D54E5efea72227B2868",
+    xoc: '0x4eE906B7135bDBdfC83FE40b8f2156C99FCB64c2',
+    usdc: '0x03e5f3a1ae8faea9d8ec56a3ed1e708cfede1970',
+    talent: '0xaAE22ccff30E636BDa436D54E5efea72227B2868',
   };
 
   const assetTypeDecimals: Record<AssetType, number> = {
@@ -57,22 +64,56 @@ export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetT
     : undefined;
 
   // Use the `useBalance` hook
-  const { data: balanceData, isError, isLoading } = useBalance({
+  const {
+    data: balanceData,
+    isError,
+    isLoading,
+  } = useBalance({
     address: walletAddress,
     token: tokenAddress,
     chainId: 84532, // Base Sepolia chain
   });
 
-  // Fetch loan applications
-  const { data: loanApplicationsData } = useQuery({
-    queryKey: ["loanApplicationsKey"],
-    queryFn: () => fetchLoanApplications(),
+  const decimals = selectedAssetType
+    ? assetTypeDecimals[selectedAssetType.toLowerCase() as AssetType] || 18
+    : 18;
+
+  console.log('Wallet Address:', walletAddress);
+  const {
+    data: underwriterData,
+    isError: isUnderwriterError,
+    isLoading: isUnderwriterLoading,
+  } = useReadContract({
+    abi: CrediTalentCenter,
+    address: '0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549',
+    functionName: 'underwriters',
+    args: [walletAddress],
   });
 
-  const decimals = selectedAssetType
-  ? assetTypeDecimals[selectedAssetType.toLowerCase() as AssetType] || 18
-  : 18;
+  console.log('Raw underwriterData:', underwriterData);
+  console.log('Type of underwriterData:', typeof underwriterData);
 
+  // Extract approvalAmount from underwriterData
+  const approvalAmount =
+    underwriterData && Array.isArray(underwriterData)
+      ? BigInt(underwriterData[1])
+      : BigInt(0);
+  console.log('Approval Amount (BigInt):', approvalAmount);
+  console.log('Approval Amount (String):', approvalAmount.toString());
+
+  // Convert BigInt to string for formatting
+  const formattedApprovalAmount = formatAmount(
+    Number(approvalAmount),
+    decimals
+  );
+
+  console.log('Formatted Approval Amount:', formattedApprovalAmount);
+
+  // Fetch loan applications
+  const { data: loanApplicationsData } = useQuery({
+    queryKey: ['loanApplicationsKey'],
+    queryFn: () => fetchLoanApplications(),
+  });
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -120,15 +161,28 @@ export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetT
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Balance:</span>
+                    <span className="text-gray-500">Balance in Wallet:</span>
                     <span>
                       {isLoading
-                        ? "Cargando..."
+                        ? 'Cargando...'
                         : isError
-                        ? "Error"
-                        : `${formatAmount(Number(balanceData?.value || 0), decimals)} ${
-                            selectedAssetType?.toUpperCase()
-                          }`}
+                        ? 'Error'
+                        : `${formatAmount(
+                            Number(balanceData?.value || 0),
+                            decimals
+                          )} ${selectedAssetType?.toUpperCase()}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">
+                      Balance in Contract:
+                    </span>
+                    <span>
+                      {isUnderwriterLoading
+                        ? 'Cargando...'
+                        : isUnderwriterError
+                        ? 'Error'
+                        : `${formattedApprovalAmount} ${selectedAssetType?.toUpperCase()}`}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -137,7 +191,10 @@ export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetT
                   </div>
                 </div>
                 {/* DEPOSITAR */}
-                <ApplytoUnderWriteButton assetType={selectedAssetType} amount={+(amount ?? 0)} />
+                <ApplytoUnderWriteButton
+                  assetType={selectedAssetType}
+                  amount={+(amount ?? 0)}
+                />
               </div>
             </CardContent>
           </Card>
@@ -185,12 +242,8 @@ export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetT
                       <TableCell>
                         <div className="flex items-center gap-x-2 py-1 text-left">
                           <Avatar>
-                            <AvatarImage
-                              src={item.userPictureUrl ?? ""}
-                            />
-                            <AvatarFallback>
-                              {item.userName}
-                            </AvatarFallback>
+                            <AvatarImage src={item.userPictureUrl ?? ''} />
+                            <AvatarFallback>{item.userName}</AvatarFallback>
                           </Avatar>
                           {item?.userName}
                         </div>
@@ -207,7 +260,7 @@ export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetT
                         2
                       )}`}</TableCell>
                       <TableCell className="text-center">
-                        {" "}
+                        {' '}
                         {item?.assetType}
                       </TableCell>
 
@@ -222,8 +275,14 @@ export default function Earn({ selectedAssetType }: { selectedAssetType?: AssetT
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center gap-2">
-                          <ApproveModalButton loanApplication={item} assetType={selectedAssetType} />
-                          <DenyModalButton loanApplication={item} assetType={selectedAssetType} />
+                          <ApproveModalButton
+                            loanApplication={item}
+                            assetType={selectedAssetType}
+                          />
+                          <DenyModalButton
+                            loanApplication={item}
+                            assetType={selectedAssetType}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>

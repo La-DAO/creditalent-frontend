@@ -137,25 +137,25 @@ export default function Component() {
               title: "Application",
               description:
                 "The borrower submits a loan application to the smart contract. The application includes personal information, such as name, biography, wallet address and activity within it, Activity Skills and Builder Score, and the purpose of the loan.",
-              image: "/assets/Hands - Give.png",
+              image: "/assets/Tech Life - Blockchain.svg",
             },
             {
               title: "Credit-Line Approval",
               description:
                 "The investors see a list of all applicants and approve a credit line to a borrower in a given token ($Talent, $usdc or $xoc), the funds are then instantly available for the borrower to withdraw.",
-              image: "/assets/Hands - Phone.png",
+              image: "/assets/Tech Life - Communication (3).svg",
             },
             {
               title: "Loan Management Console",
               description:
                 "The borrower can then withdraw the full amount that was approved by the investor all in a decentralized manner, the smart contract being the Schelling Point.",
-              image: "/assets/Hands - Show.png",
+              image: "/assets/Tech Life - Remote Life.svg",
             },
             {
               title: "Loan Repayment Agreement",
               description:
                 "If the borrower doesn't pay, they will be added to the Wall of Shame and hounded on social media to repay the loan.",
-              image: "/assets/Hands - Presenting [colors].png",
+              image: "/assets/Tech Life - Life Management.svg",
             },
           ].map((step, index) => (
             <div key={step.title} className="relative flex gap-8">
