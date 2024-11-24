@@ -161,7 +161,7 @@ export default function Earn({
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Balance:</span>
+                    <span className="text-gray-500">Balance in Wallet:</span>
                     <span>
                       {isLoading
                         ? 'Cargando...'
@@ -175,7 +175,7 @@ export default function Earn({
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">
-                      Deposited in contract:
+                      Balance in Contract:
                     </span>
                     <span>
                       {isUnderwriterLoading
