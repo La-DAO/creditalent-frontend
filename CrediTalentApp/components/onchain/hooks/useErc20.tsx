@@ -47,16 +47,6 @@ import {
       functionName: "totalSupply"
     });
   
-    // Leer balance
-    const getBalance = (address: Address) => {
-      return useReadContract({
-        address: TOKEN_ADDRESSES[tokenType],
-        abi: ERC20ABI,
-        functionName: "balanceOf",
-        args: [address]
-      });
-    };
-  
     // Aprobar tokens
     const { writeContract: approveAsync, data: approveHash } = useWriteContract();
   
@@ -66,13 +56,12 @@ import {
     const approve = async (spender: Address, amount: string) => {
       try {
         setIsPending(true);
-        const tx = await approveAsync({
+        await approveAsync({
           address: TOKEN_ADDRESSES[tokenType],
           abi: ERC20ABI,
           functionName: "approve",
           args: [spender, parseUnits(amount, 18)]
         });
-        return tx;
       } finally {
         setIsPending(false);
       }
@@ -84,13 +73,12 @@ import {
     const transfer = async (to: Address, amount: string) => {
       try {
         setIsPending(true);
-        const tx = await transferAsync({
+        await transferAsync({
           address: TOKEN_ADDRESSES[tokenType],
           abi: ERC20ABI,
           functionName: "transfer",
           args: [to, parseUnits(amount, 18)]
         });
-        return tx;
       } finally {
         setIsPending(false);
       }
@@ -110,7 +98,6 @@ import {
       isSuccessApprove,
   
       // Funciones
-      getBalance,
       approve,
       transfer
     };

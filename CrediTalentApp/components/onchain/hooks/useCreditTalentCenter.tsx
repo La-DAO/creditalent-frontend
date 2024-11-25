@@ -110,7 +110,7 @@ export const useCreditTalentCenter = (assetType: AssetType) => {
   const applyForUnderwriting = async (amount: string) => {
     try {
       setIsPending(true);
-      const tx = await applyToUnderwriteAsync({
+      await applyToUnderwriteAsync({
         address: CONTRACT_ADDRESSES[assetType],
         abi: CreditTalentCenterABI,
         functionName: "applyToUnderwrite",
@@ -136,7 +136,7 @@ export const useCreditTalentCenter = (assetType: AssetType) => {
   ) => {
     try {
       setIsPending(true);
-      const tx = await approveCreditAsync({
+      await approveCreditAsync({
         address: CONTRACT_ADDRESSES[assetType],
         abi: CreditTalentCenterABI,
         functionName: "approveCredit",
@@ -161,7 +161,7 @@ export const useCreditTalentCenter = (assetType: AssetType) => {
   ) => {
     try {
       setIsPending(true);
-      const tx = await rejectCreditAsync({
+      await rejectCreditAsync({
         address: CONTRACT_ADDRESSES[assetType],
         abi: CreditTalentCenterABI,
         functionName: "rejectCredit",

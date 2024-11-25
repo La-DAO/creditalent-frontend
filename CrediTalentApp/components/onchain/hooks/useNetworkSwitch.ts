@@ -19,6 +19,7 @@ export const useNetworkSwitch = () => {
       
       return true;
     } catch (error) {
+      console.log('Error:', error)
       toast.error("Error al cambiar de red");
       return false;
     }
