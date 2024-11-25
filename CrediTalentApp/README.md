@@ -34,3 +34,39 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+## Project structure
+
+src/
+├── abis/
+│   ├── contracts/
+│   │   ├── CreditTalentCenter.json
+│   │   ├── CreditPoints.json
+│   │   └── ERC20.json
+│   └── index.ts
+│
+├── components/
+│   ├── ui/
+│   │   └── ... (componentes shadcs)
+│   │
+│   └── onchain/
+│       ├── hooks/
+│       │   ├── useCreditTalentCenter.ts
+│       │   └── useErc20.ts
+│       └── components/
+│           ├── ApproveModalButton.tsx
+│           ├── DenyModalButton.tsx
+│           └── NewCreditRequestModal.tsx
+│
+├── types/
+│   ├── creditalent-responses.ts
+│   └── contracts/
+│       └── CreditTalentCenter.ts
+│
+├── lib/
+│   ├── constants.ts
+│   └── utils.ts
+│
+└── hooks/
+    └── ... (hooks generales)

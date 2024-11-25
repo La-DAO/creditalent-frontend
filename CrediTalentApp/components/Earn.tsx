@@ -21,9 +21,9 @@ import { AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
-import ApplytoUnderWriteButton from './onchain/applyToUnderwriteButton';
-import { ApproveModalButton } from './onchain/approveModalButton';
-import { DenyModalButton } from './onchain/denyModalButton';
+import ApplytoUnderWriteButton from './onchain/components/applyToUnderwriteButton';
+import { ApproveModalButton } from './onchain/components/approveModalButton';
+import { DenyModalButton } from './onchain/components/denyModalButton';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import CrediTalentCenter from './onchain/abis/CrediTalentCenter';
 

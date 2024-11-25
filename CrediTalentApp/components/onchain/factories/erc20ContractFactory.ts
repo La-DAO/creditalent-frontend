@@ -1,4 +1,4 @@
-import { AssetType } from "@/types/creditalent-responses"
+import { AssetType } from "@/lib/constants"
 import { Address } from "viem"
 
 

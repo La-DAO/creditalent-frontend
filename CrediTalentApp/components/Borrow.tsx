@@ -3,10 +3,7 @@
 
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Ecosistema from "./Ecosistema";
 import AboutPool from "./AboutPool";
 import { useQuery } from "@tanstack/react-query";
@@ -16,11 +13,8 @@ import { useEffect } from "react";
 import { CREDIT_ALLOWANCE_BY_SCORE } from "../lib/constants";
 import { BuilderScoreChart } from "./builder-score-chart";
 import NoPassportCard from "./noPassportCard";
-import { ExternalLink, LoaderCircle } from "lucide-react";
-import { createLoanApplication } from "../controllers/creditalentApi";
-import { CreateLoanApplicationData } from "@/types/creditalent-responses";
-import { TalentPassportType } from "@/types/talent-protocol-responses";
-import { NewCreditRequestModal } from "./onchain/newCreditRequestModalButton";
+import { LoaderCircle } from "lucide-react";
+import { NewCreditRequestModal } from "./onchain/components/newCreditRequestModalButton";
 import BorrowAvailableCredit from "./BorrowAvailableCredit";
 
 export default function Component() {

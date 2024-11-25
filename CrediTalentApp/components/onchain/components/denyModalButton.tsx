@@ -19,7 +19,7 @@ import {
   AssetType,
   LoanApplicationExtended,
 } from "@/types/creditalent-responses";
-import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
+import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
 
 export function DenyModalButton({
   loanApplication,
