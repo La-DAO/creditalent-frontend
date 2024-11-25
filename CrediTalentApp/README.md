@@ -37,7 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 ## Project structure
-
+```
 src/
 ├── abis/
 │   ├── contracts/
@@ -48,7 +48,7 @@ src/
 │
 ├── components/
 │   ├── ui/
-│   │   └── ... (componentes shadcs)
+│   │   └── ... (componentes shadcn)
 │   │
 │   └── onchain/
 │       ├── hooks/
@@ -70,3 +70,4 @@ src/
 │
 └── hooks/
     └── ... (hooks generales)
+```
