@@ -115,4 +115,3 @@ type CreditInfo = {
 }
 
 
-export  type AssetType = 'xoc' | 'usdc' | 'talent'

@@ -9,4 +9,5 @@ export function cn(...inputs: ClassValue[]) {
 export const convertToBytes32 = (num: number): string => {
   return pad(toHex(num), { size: 32 })
 }
+
 export const isPassportTalentRequired = process.env.NEXT_PUBLIC_PASSPORT_TALENT_REQUIRED === 'true'

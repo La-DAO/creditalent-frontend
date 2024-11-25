@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { Button } from "../ui/button";
-import { AssetType } from "@/types/creditalent-responses";
-import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
+import { Button } from "../../ui/button";
+import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
 import { toast } from "sonner";
-import { erc20ContractFactory } from "./factories/erc20ContractFactory";
+import { erc20ContractFactory } from "../factories/erc20ContractFactory";
 import { Loader2 } from "lucide-react";
+import { AssetType } from "@/lib/constants";
 
 export default function ApplytoUnderWriteButton({
   assetType,

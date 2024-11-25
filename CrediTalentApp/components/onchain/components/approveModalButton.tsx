@@ -19,7 +19,7 @@ import {
   LoanApplicationExtended,
 } from "@/types/creditalent-responses";
 import { Loader2 } from "lucide-react"; // Import Loader2 from lucide-react
-import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
+import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
 import { saveApproveCreditInfo } from "@/controllers/creditalentApi";
 
 export function ApproveModalButton({

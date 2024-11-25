@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AssetType } from "@/types/creditalent-responses";
+import { AssetType } from "@/lib/constants";
 import { useState } from "react";
 
 export default function Home() {
