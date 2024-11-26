@@ -53,6 +53,13 @@ export default function Earn({
     talent: '0xaAE22ccff30E636BDa436D54E5efea72227B2868',
   };
 
+  const creditTalentCenters: Record<AssetType, `0x${string}`> = {
+    xoc: "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549",
+    usdc: "0x9A41029a07Ca57873CAd637384671349Fc9e8D9C",
+    talent: "0x465d5decA1A8d4c93e7D6a97018F0EFfCe56D247",
+  };
+  const contractAddress = selectedAssetType ? creditTalentCenters[selectedAssetType] : undefined;
+
   const assetTypeDecimals: Record<AssetType, number> = {
     xoc: 18,
     usdc: 6,
@@ -62,6 +69,8 @@ export default function Earn({
   const tokenAddress = selectedAssetType
     ? assetTypeToAddress[selectedAssetType.toLowerCase() as AssetType]
     : undefined;
+
+    console.log('Token Address:', tokenAddress);
 
   // Use the `useBalance` hook
   const {
@@ -79,13 +88,14 @@ export default function Earn({
     : 18;
 
   console.log('Wallet Address:', walletAddress);
+
   const {
     data: underwriterData,
     isError: isUnderwriterError,
     isLoading: isUnderwriterLoading,
   } = useReadContract({
     abi: CrediTalentCenter,
-    address: '0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549',
+    address: contractAddress as Address,
     functionName: 'underwriters',
     args: [walletAddress],
   });
