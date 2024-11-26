@@ -34,7 +34,7 @@ export default function Component() {
       <section className="container mx-auto px-4 py-8">
         <div className="grid items-center gap-12 lg:grid-cols-2 mt-28">
           <div className="space-y-6">
-            <h1 className="m-8 text-4xl font-bold tracking-tight text-orange-500 sm:text-5xl xl:text-6xl">
+            <h1 className="m-8 text-4xl font-bold tracking-tight text-[#FF5722] sm:text-5xl xl:text-6xl">
               Quick and Easy Loans for Your Web3 Needs.
             </h1>
             <p className="text-xl text-gray-600 m-10">
@@ -45,14 +45,14 @@ export default function Component() {
             <div className="flex flex-wrap gap-4 ml-10">
               <Button
                 variant="outline"
-                className="rounded-full border-4 border-orange-500 bg-transparent px-8 text-orange-500 hover:bg-gray-50 text-2xl"
+                className="rounded-full border-4 border-[#FF5722] bg-transparent px-8 text-[#FF5722] hover:bg-gray-50 text-2xl"
                 onClick={processRequestLoan}
               >
                 Request A Loan
               </Button>
               <Button
                 variant="outline"
-                className="rounded-full border-4 border-orange-500 bg-transparent px-10 text-orange-500 hover:bg-gray-50 text-2xl"
+                className="rounded-full border-4 border-[#FF5722] bg-transparent px-10 text-[#FF5722] hover:bg-gray-50 text-2xl"
                 onClick={processRequestEarn}
               >
                 Earn Interest
@@ -76,7 +76,7 @@ export default function Component() {
 
       {/* How it Works */}
       <section className="container mx-auto px-4 py-8 mt-16">
-        <h2 className="mb-2 text-center text-3xl font-bold text-orange-500">
+        <h2 className="mb-2 text-center text-3xl font-bold text-[#FF5722]">
           How it works?
         </h2>
         <p className="mb-16 text-center text-gray-600 text-lg">
@@ -110,7 +110,7 @@ export default function Component() {
             },
           ].map((step, index) => (
             <div key={step.title} className="relative flex gap-8">
-              <div className="text-8xl font-bold text-orange-500">
+              <div className="text-8xl font-bold text-[#FF5722]">
                 0{index + 1}
               </div>
               <div className="space-y-4">
@@ -121,7 +121,7 @@ export default function Component() {
                   height={400}
                   className="h-auto w-150"
                 />
-                <h3 className="text-xl font-bold text-orange-500">
+                <h3 className="text-xl font-bold text-[#FF5722]">
                   {step.title}
                 </h3>
                 <p className="text-gray-600 text-lg">{step.description}</p>
@@ -134,7 +134,7 @@ export default function Component() {
       {/* Borrowing Options */}
       <section className="container mx-auto px-4 py-2">
         <div className="rounded-3xl bg-blue-50/50 px-4 py-6">
-            <h2 className="mx-auto mb-24 mt-24 max-w-3xl text-center text-3xl font-bold text-orange-500 tracking-tighter">
+            <h2 className="mx-auto mb-24 mt-24 max-w-3xl text-center text-3xl font-bold text-[#FF5722] tracking-tighter">
             We use your Talent passport to calculate your risk profile and extend an instant credit line.
             </h2>
           <div className="grid gap-8 md:grid-cols-3">
@@ -163,7 +163,7 @@ export default function Component() {
             ].map((option) => (
               <div
                 key={option.title}
-                className={`${option.color} group relative overflow-hidden rounded-3xl p-6 shadow-lg transition-transform hover:-translate-y-1 h-[350px] border-8 border-orange-500`}
+                className={`${option.color} group relative overflow-hidden rounded-3xl p-6 shadow-lg transition-transform hover:-translate-y-1 h-[350px] border-8 border-[#FF5722]`}
               >
                 <div className="relative z-10 h-full space-y-4 text-white">
                   <p className="text-sm font-medium">Borrow</p>
