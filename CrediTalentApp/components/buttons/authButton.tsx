@@ -62,9 +62,9 @@ export default function AuthButton({
       <Button
         onClick={isLoggedIn ? logout : login}
       size={size}
-      className="rounded-md bg-[#FF5722] text-white hover:bg-[#FF5722]/90"
+      className="rounded-md bg-[#FF5722] text-white text-xl hover:bg-[#FF5722]/90"
     >
-        {isLoggedIn ? 'Salir' : 'Entrar'}
+        {isLoggedIn ? 'Disconnect' : 'Connect Wallet'}
       </Button>
     </>
   )
