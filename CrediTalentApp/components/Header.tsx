@@ -11,22 +11,22 @@ export default function Header() {
     <>
       {/* Navigation */}
       <nav className="container mx-auto flex h-20 items-center justify-between px-4">
-        <Link href="/" className="text-2xl font-bold text-[#FF5722]">
+        <Link href="/" className="text-3xl font-bold text-[#FF5722]">
           CrediTalent
         </Link>
         <div className="hidden items-center space-x-8 md:flex">
 
           {isLoggedIn && (
-            <Link href="/borrow" className="text-gray-600 hover:text-gray-900">
+            <Link href="/borrow" className="text-xl text-[#FF5722] hover:text-gray-900">
               Borrow
             </Link>
           )}
           {isLoggedIn && (
-            <Link href="/earn" className="text-gray-600 hover:text-gray-900">
+            <Link href="/earn" className="text-xl text-[#FF5722] hover:text-gray-900">
               Earn
             </Link>
           )}
-          <Link href="#" className="text-gray-600 hover:text-gray-900">
+          <Link href="#" className="text-xl text-[#FF5722] hover:text-gray-900">
             Support
           </Link>
 
