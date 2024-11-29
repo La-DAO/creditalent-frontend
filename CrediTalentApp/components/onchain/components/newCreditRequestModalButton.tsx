@@ -62,11 +62,11 @@ export function NewCreditRequestModal({
         toast.error("Application already exists");
         return;
       }
-
-      if (talentPassportData === null && isTalentPassportRequired) {
-        toast.error("Required talent passport!");
-        return;
-      }
+      // TODO: FOR TESTING
+      // if (talentPassportData === null && isTalentPassportRequired) {
+      //   toast.error("Required talent passport!");
+      //   return;
+      // }
 
       if (accountAddress == null) {
         toast.warning("user not logged");
