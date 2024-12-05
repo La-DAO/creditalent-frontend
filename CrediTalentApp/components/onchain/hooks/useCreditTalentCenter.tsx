@@ -36,6 +36,15 @@ export const useCreditTalentCenter = (assetType: AssetType) => {
 
   const getApplicationInfoAsync = async () => {
     try {
+      if (!address) {
+        console.error('No address found')
+        return undefined;
+      }
+      if (!CONTRACT_ADDRESSES[assetType]) {
+        console.error('No contract address found')
+        return undefined;
+      }
+      
       const data = await readContract(client!, {
         address: CONTRACT_ADDRESSES[assetType],
         abi: CreditTalentCenterABI,

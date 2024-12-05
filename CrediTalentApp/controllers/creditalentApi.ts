@@ -46,7 +46,7 @@ export const createLoanApplication = async (
     }
 
     const resData = await response.json() // Return the response data
-    console.log('🚀 ~ resData:', resData)
+    console.log('Credit Talent API Response - createLoanApplication:', resData)
 
     return +resData
   } catch (error) {
@@ -73,7 +73,7 @@ export const getCreditInfo = async (
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to create loan application')
       }
-    console.log('🚀 ~ response:', response)
+    console.log('Credit Talent API Response - getCreditInfo:', response)
     const data = await response.json()
 
     return data
@@ -104,7 +104,7 @@ export const saveApproveCreditInfo = async (
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to create loan application')
       }
-    console.log('🚀 ~ response:', response)
+    console.log('Credit Talent API Response - saveApproveCreditInfo:', response)
     const data = await response.json()
 
     return data
@@ -133,7 +133,7 @@ export const saveRejectedCreditInfo = async (
       const errorData = await response.json()
       throw new Error(errorData.message || 'Failed to create loan application')
       }
-    console.log('🚀 ~ response:', response)
+    console.log('Credit Talent API Response - saveRejectedCreditInfo:', response)
     const data = await response.json()
 
     return data
