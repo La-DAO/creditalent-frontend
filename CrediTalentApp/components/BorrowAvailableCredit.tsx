@@ -11,7 +11,7 @@ import { BorrowForm } from "./BorrowForm";
 export default function BorrowAvailableCredit() {
   const { address: userAddress } = useAccount();
 
-  const { data: creditInfoData, status: creditInfoQueryStatus, isLoading } = useQuery({
+  const { data: creditInfoData, isLoading } = useQuery({
     queryKey: ["creditInfoKey", userAddress],
     queryFn: () => getCreditInfo(userAddress as string),
     enabled: Boolean(userAddress),

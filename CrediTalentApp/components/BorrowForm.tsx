@@ -50,7 +50,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
 
   const onBorrow = async () => {
     try {
-      // setIsLoading(true);
+      setIsLoading(true);
 
       if (!borrowAmount || parseFloat(borrowAmount) <= 0) {
         toast.error("Por favor ingresa una cantidad válida");
@@ -61,18 +61,14 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
         toast.error("La cantidad excede tu crédito disponible");
         return;
       }
-      console.log('🚀 ~ 2 ~ onBorrow:')
 
       try {
 
         const borrowAmountInWei = parseUnits(borrowAmount, 18);
         const onBehalf = userAddress;
         const receiver = userAddress;
-        const xocAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
         const creditTalentCenterAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
         const creditPointsAddress = "0xa3ceD4b017F17Fd4ff5a4f1786b7bBF8F8067B31";
-
-
 
         const marketParams = {
           loanToken: token.address,
@@ -96,14 +92,12 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
         })
         await borrowAsync(payload);
       } catch (e) {
-        console.log('🔴🔴🔴🔴🔴 ~ borrow ~ e:', e)
+        toast.error("Error: ", e.toString());
       }
     } catch (error) {
-      console.log('🚀 ~ 4 ~ onBorrow:')
-      console.error("Error en el préstamo:", error);
       toast.error("Error al procesar el préstamo");
     } finally {
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -161,7 +155,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
 
       {!hasApprovedApplications && (
         <div className="text-center text-sm text-blue-600">
-          No Approved Loan Applications yet, use "Request a new CreditLine" to
+          No Approved Loan Applications yet, use &ldquo;Request a new CreditLine&rdquo; to
           access your credit
         </div>
       )}
