@@ -48,9 +48,14 @@ export default function ApplytoUnderWriteButton({
         functionName: "applyToUnderwrite",
         args: [amountInWei],
       });
+
+      console.log('🚀 ~ handleApplytoUnderWrite ~ txERC20:', txERC20)
+      console.log('🚀 ~ handleApplytoUnderWrite ~ txTalentCenter:', txTalentCenter)
+      console.log('🚀 ~ handleApplytoUnderWrite ~ isSuccessApproveTx:', isSuccessApproveTx)
       toast.success("Success");
     } catch (err) {
       toast.error("Error on applyToUnderwrite ");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

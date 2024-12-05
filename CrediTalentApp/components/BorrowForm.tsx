@@ -95,7 +95,8 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
         toast.error("Error: ", e.toString());
       }
     } catch (error) {
-      toast.error("Error al procesar el préstamo");
+      toast.error("Error al procesar el préstamo: ", error.toString());
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
