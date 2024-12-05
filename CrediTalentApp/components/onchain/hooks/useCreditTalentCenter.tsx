@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { parseEther, Address } from "viem";
 import { useState } from "react";
-import { CreditTalentCenterABI } from "@/abis";
+import { CreditTalentCenterABI } from "@/components/onchain/abis";
 import { ASSET_TYPES, AssetType } from "@/lib/constants";
 import { ApplicationInfo, ApplicationStatus } from "@/types/contracts/CreditalentCenter";
 import { readContract } from "viem/actions";
@@ -36,6 +36,15 @@ export const useCreditTalentCenter = (assetType: AssetType) => {
 
   const getApplicationInfoAsync = async () => {
     try {
+      if (!address) {
+        console.error('No address found')
+        return undefined;
+      }
+      if (!CONTRACT_ADDRESSES[assetType]) {
+        console.error('No contract address found')
+        return undefined;
+      }
+      
       const data = await readContract(client!, {
         address: CONTRACT_ADDRESSES[assetType],
         abi: CreditTalentCenterABI,

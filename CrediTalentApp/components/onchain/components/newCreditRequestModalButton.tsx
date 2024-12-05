@@ -18,7 +18,6 @@ import {
   useAccount,
 } from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
 import { AssetType } from "@/lib/constants";
 import { useCreditTalentCenter } from "../hooks/useCreditTalentCenter";
 import { useNetworkSwitch } from "../hooks/useNetworkSwitch";
@@ -63,10 +62,11 @@ export function NewCreditRequestModal({
         return;
       }
 
-      if (talentPassportData === null && isTalentPassportRequired) {
-        toast.error("Required talent passport!");
-        return;
-      }
+      // TODO: FOR TESTING
+      // if (talentPassportData === null && isTalentPassportRequired) {
+      //   toast.error("Required talent passport!");
+      //   return;
+      // }
 
       if (accountAddress == null) {
         toast.warning("user not logged");
@@ -97,7 +97,6 @@ export function NewCreditRequestModal({
       (async () => {
         try {
           const applicationInfo = await getApplicationInfoAsync();
-          console.log('🚀 ~ applicationInfo:', applicationInfo)
           const dataToSend = createLoanApplicationDataFromTalentPassport(
             accountAddress!,
             +amount,
@@ -140,7 +139,7 @@ export function NewCreditRequestModal({
       nominationsReceived: talentPassport?.nominations_received_count ?? -1,
       followers: totalFollowerCount ?? -1,
       walletId: walletId,
-      applicantId: applicationId,
+      applicantId: applicationId.toString(),
       userName: user?.username ?? "-",
       userPictureUrl: talentPassportData?.user?.profile_picture_url ?? "",
     };

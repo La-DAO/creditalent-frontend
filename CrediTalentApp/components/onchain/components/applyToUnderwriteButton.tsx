@@ -20,7 +20,6 @@ export default function ApplytoUnderWriteButton({
   const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx } =
   useWaitForTransactionReceipt({ hash });
   
-  console.log('🚀 ~ isSuccessApproveTx:', isSuccessApproveTx)
   const [isLoading, setIsLoading] = useState(false);
 
   // Function to handle deposit or withdraw
@@ -42,7 +41,6 @@ export default function ApplytoUnderWriteButton({
         functionName: "approve",
         args: [talentCenterContract.address, amountInWei], // Convert amount to 18 decimals
       });
-      console.log('🚀 ~ handleApplytoUnderWrite ~ txERC20:', txERC20)
 
       const txTalentCenter = await applytoUnderWrite({
         abi: talentCenterContract.abi,
@@ -50,11 +48,14 @@ export default function ApplytoUnderWriteButton({
         functionName: "applyToUnderwrite",
         args: [amountInWei],
       });
+
+      console.log('🚀 ~ handleApplytoUnderWrite ~ txERC20:', txERC20)
       console.log('🚀 ~ handleApplytoUnderWrite ~ txTalentCenter:', txTalentCenter)
+      console.log('🚀 ~ handleApplytoUnderWrite ~ isSuccessApproveTx:', isSuccessApproveTx)
       toast.success("Success");
     } catch (err) {
-      console.error("Error executing deposit:", err);
       toast.error("Error on applyToUnderwrite ");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

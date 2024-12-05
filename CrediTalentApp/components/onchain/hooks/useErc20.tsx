@@ -5,7 +5,7 @@ import {
   } from "wagmi";
   import { parseUnits, Address } from "viem";
   import { useState } from "react";
-  import { ERC20ABI } from "@/abis";
+  import { ERC20ABI } from "@/components/onchain/abis";
   import { ASSET_TYPES, AssetType } from "@/lib/constants";
   
   export const TOKEN_ADDRESSES: Record<AssetType, Address> = {

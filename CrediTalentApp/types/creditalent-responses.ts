@@ -11,7 +11,7 @@ export type CreateLoanApplicationData = {
   nominationsReceived: number
   followers: number
   walletId: string
-  applicantId: number
+  applicantId: string
   reviewedById?: number
 }
 
