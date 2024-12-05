@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { parseEther, Address } from "viem";
 import { useState } from "react";
-import { CreditTalentCenterABI } from "@/abis";
+import { CreditTalentCenterABI } from "@/components/onchain/abis";
 import { ASSET_TYPES, AssetType } from "@/lib/constants";
 import { ApplicationInfo, ApplicationStatus } from "@/types/contracts/CreditalentCenter";
 import { readContract } from "viem/actions";

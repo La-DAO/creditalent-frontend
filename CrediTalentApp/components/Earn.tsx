@@ -26,7 +26,7 @@ import { DenyModalButton } from './onchain/components/denyModalButton';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { AssetType } from '@/lib/constants';
 import { Address } from 'viem';
-import { CreditTalentCenterABI } from '@/abis';
+import { CreditTalentCenterABI } from '@/components/onchain/abis';
 
 // Utility function to format amounts
 function formatAmount(amount: number, decimals: number = 18): string {

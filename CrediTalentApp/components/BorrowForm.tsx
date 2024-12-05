@@ -15,7 +15,7 @@ import {
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import { useWriteContract } from "wagmi";
 import { MORPHO_CONTRACT_ADDRESS } from "./onchain/hooks/useMorpho";
-import MorphoABI from "@/abis/contracts/Morpho.json";
+import { MorphoABI } from "@/components/onchain/abis";
 import { parseUnits } from "viem";
 import { useToken } from "./onchain/hooks/useErc20";
 

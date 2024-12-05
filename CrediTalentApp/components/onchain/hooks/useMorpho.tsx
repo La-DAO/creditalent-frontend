@@ -3,7 +3,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { Address } from "viem";
-import MorphoABI from "@/abis/contracts/Morpho.json";
+import { MorphoABI} from "@/components/onchain/abis";
 
 export const MORPHO_CONTRACT_ADDRESS = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb" as const;
 
