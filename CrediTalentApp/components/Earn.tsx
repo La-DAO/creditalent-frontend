@@ -24,9 +24,9 @@ import ApplytoUnderWriteButton from './onchain/components/applyToUnderwriteButto
 import { ApproveModalButton } from './onchain/components/approveModalButton';
 import { DenyModalButton } from './onchain/components/denyModalButton';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
-import CrediTalentCenter from './onchain/abis/CrediTalentCenter';
 import { AssetType } from '@/lib/constants';
 import { Address } from 'viem';
+import { CreditTalentCenterABI } from '@/abis';
 
 // Utility function to format amounts
 function formatAmount(amount: number, decimals: number = 18): string {
@@ -95,7 +95,7 @@ export default function Earn({
     isError: isUnderwriterError,
     isLoading: isUnderwriterLoading,
   } = useReadContract({
-    abi: CrediTalentCenter,
+    abi: CreditTalentCenterABI,
     address: contractAddress as Address,
     functionName: 'underwriters',
     args: [walletAddress],

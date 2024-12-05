@@ -1,6 +1,7 @@
 import { AssetType } from "@/lib/constants"
 import { Address } from "viem"
 
+// TODO: CRIS - use hook useErc20
 export const talentCenterContractFactory = (assetType: AssetType) => {
   const XOC_TALENT_CENTER_CONTRACT = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549"
   const TALENT_TALENT_CENTER_CONTRACT = "0xaAE22ccff30E636BDa436D54E5efea72227B2868" // TODO: SETUP 
