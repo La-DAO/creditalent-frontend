@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BorrowOnchain } from "./onchain/components/BorrowOnchain";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import { useWriteContract } from "wagmi";
 import { MORPHO_CONTRACT_ADDRESS } from "./onchain/hooks/useMorpho";
@@ -38,22 +37,20 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   const { address: userAddress } = useAccount();
   const token = useToken(selectedAsset);
 
-  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow } = 
-  useWaitForTransactionReceipt({ hash: borrowHash });
+  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow } =
+    useWaitForTransactionReceipt({ hash: borrowHash });
 
 
-    // HANDLE SUCCESS
-    useEffect(() => {
-      if (isSuccessBorrow) {
-        toast.success("¡Préstamo exitoso!");
-      }
-    }, [isSuccessBorrow]);
-    
+  // HANDLE SUCCESS
+  useEffect(() => {
+    if (isSuccessBorrow) {
+      toast.success("¡Préstamo exitoso!");
+    }
+  }, [isSuccessBorrow]);
+
   const onBorrow = async () => {
     try {
       // setIsLoading(true);
-      console.log('🚀 ~ 1 ~ onBorrow:')
-      console.log('🚀 ~ onBorrow ~ borrowAmount:', borrowAmount)
 
       if (!borrowAmount || parseFloat(borrowAmount) <= 0) {
         toast.error("Por favor ingresa una cantidad válida");
@@ -65,43 +62,42 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
         return;
       }
       console.log('🚀 ~ 2 ~ onBorrow:')
-       
-    try {
 
-      const borrowAmountInWei = parseUnits(borrowAmount, 18);
-      const onBehalf = userAddress;
-      const receiver = userAddress;
-      const xocAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
-      const creditTalentCenterAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
-      const creditPointsAddress = "0xa3ceD4b017F17Fd4ff5a4f1786b7bBF8F8067B31";
-      console.log('=== Borrow Parameters v1 ===');
-      console.log('🚀 ~ onBorrow ~ marketParams.token.address:', token.address)
-      console.log('Selected Asset:', selectedAsset);
-      console.log('Token Address:', token.address);
-      console.log('Amount Wei:', borrowAmountInWei.toString());
-      console.log('On Behalf:', onBehalf);
-      console.log('Receiver:', receiver);
+      try {
 
-      const marketParams = {
-        loanToken: token.address,
-        collateralToken: creditPointsAddress,
-        oracle: creditTalentCenterAddress,
-        irm: "0x46415998764C29aB2a25CbeA6254146D50D22687",
-        lltv: BigInt(980000000000000000),
-      };
-      
+        const borrowAmountInWei = parseUnits(borrowAmount, 18);
+        const onBehalf = userAddress;
+        const receiver = userAddress;
+        const xocAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
+        const creditTalentCenterAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
+        const creditPointsAddress = "0xa3ceD4b017F17Fd4ff5a4f1786b7bBF8F8067B31";
 
 
-      borrowAsync({
-        address: MORPHO_CONTRACT_ADDRESS,
-        abi: MorphoABI,
-        functionName: "borrow",
-        args: [marketParams, borrowAmountInWei,   BigInt(0), onBehalf, receiver],
-      });
-    } catch(e){
-      console.log('🔴🔴🔴🔴🔴 ~ borrow ~ e:', e)
-    }
-      console.log('🚀 ~ 3 ~ onBorrow:')
+
+        const marketParams = {
+          loanToken: token.address,
+          collateralToken: creditPointsAddress,
+          oracle: creditTalentCenterAddress,
+          irm: "0x46415998764C29aB2a25CbeA6254146D50D22687",
+          lltv: BigInt(980000000000000000),
+        };
+        const payload = { 
+          address: MORPHO_CONTRACT_ADDRESS,
+          abi: MorphoABI,
+          functionName: "borrow",
+          args: [marketParams, borrowAmountInWei, BigInt(0), onBehalf, receiver],
+        }
+
+        console.log({
+          address: payload.address,
+          abi: payload.abi,
+          functionName: payload.functionName,
+          args: payload.args,
+        })
+        await borrowAsync(payload);
+      } catch (e) {
+        console.log('🔴🔴🔴🔴🔴 ~ borrow ~ e:', e)
+      }
     } catch (error) {
       console.log('🚀 ~ 4 ~ onBorrow:')
       console.error("Error en el préstamo:", error);

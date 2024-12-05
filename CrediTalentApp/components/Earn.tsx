@@ -14,7 +14,6 @@ import {
 } from './ui/table';
 import { Avatar } from '@coinbase/onchainkit/identity';
 import {
-  AssetType,
   LoanApplicationExtended,
 } from '@/types/creditalent-responses';
 import { AvatarFallback, AvatarImage } from './ui/avatar';
@@ -26,6 +25,8 @@ import { ApproveModalButton } from './onchain/components/approveModalButton';
 import { DenyModalButton } from './onchain/components/denyModalButton';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import CrediTalentCenter from './onchain/abis/CrediTalentCenter';
+import { AssetType } from '@/lib/constants';
+import { Address } from 'viem';
 
 // Utility function to format amounts
 function formatAmount(amount: number, decimals: number = 18): string {
