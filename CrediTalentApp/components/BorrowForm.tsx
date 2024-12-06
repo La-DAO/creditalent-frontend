@@ -68,7 +68,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
         const onBehalf = userAddress;
         const receiver = userAddress;
         const creditTalentCenterAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
-        const creditPointsAddress = "0xa3ceD4b017F17Fd4ff5a4f1786b7bBF8F8067B31";
+        const creditPointsAddress = "0x3adE9C2638e407D4CCB5Ee09Fb052092FCaF6421";
 
         const marketParams = {
           loanToken: token.address,
