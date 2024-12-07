@@ -37,9 +37,10 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   const { address: userAddress } = useAccount();
   const token = useToken(selectedAsset);
 
-  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow } =
+  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow, data: borrowReceipt } =
     useWaitForTransactionReceipt({ hash: borrowHash });
 
+  console.log('🚀 ~ BorrowForm ~ borrowReceipt:', borrowReceipt)
 
   // HANDLE SUCCESS
   useEffect(() => {
@@ -68,7 +69,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
         const onBehalf = userAddress;
         const receiver = userAddress;
         const creditTalentCenterAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
-        const creditPointsAddress = "0xa3ceD4b017F17Fd4ff5a4f1786b7bBF8F8067B31";
+        const creditPointsAddress = "0x3adE9C2638e407D4CCB5Ee09Fb052092FCaF6421";
 
         const marketParams = {
           loanToken: token.address,
@@ -77,6 +78,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
           irm: "0x46415998764C29aB2a25CbeA6254146D50D22687",
           lltv: BigInt(980000000000000000),
         };
+
         const payload = { 
           address: MORPHO_CONTRACT_ADDRESS,
           abi: MorphoABI,
@@ -84,12 +86,6 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
           args: [marketParams, borrowAmountInWei, BigInt(0), onBehalf, receiver],
         }
 
-        console.log({
-          address: payload.address,
-          abi: payload.abi,
-          functionName: payload.functionName,
-          args: payload.args,
-        })
         await borrowAsync(payload);
       } catch (e) {
         toast.error("Error: ", e.toString());
@@ -105,7 +101,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
-        Specify the quantity to borrow V11
+        Specify the quantity to borrow
       </div>
 
       <div className="flex items-center gap-4">
