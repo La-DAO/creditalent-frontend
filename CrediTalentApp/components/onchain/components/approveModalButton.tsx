@@ -46,7 +46,6 @@ export function ApproveModalButton({
   useEffect(() => {
     if (isSuccessApproveTx && !isLoadingApproveTx) {
       const marketId = approveReceipt?.logs?.[1]?.topics?.[1]
-      console.log('🚀 ~ useEffect ~ marketId:', marketId)
     }
   }, [isSuccessApproveTx, isLoadingApproveTx])
 
@@ -98,7 +97,7 @@ export function ApproveModalButton({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="border-secondary hover:bg-secondary/60"
+          className="bg-[#FF4405] hover:bg-[#FF4405]/90 text-white"
         >
           Aprobar
         </Button>
