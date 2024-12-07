@@ -27,6 +27,7 @@ import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { AssetType } from '@/lib/constants';
 import { Address } from 'viem';
 import { CreditTalentCenterABI } from '@/components/onchain/abis';
+import { FileX } from 'lucide-react';
 
 // Utility function to format amounts
 function formatAmount(amount: number, decimals: number = 18): string {
@@ -109,16 +110,12 @@ export default function Earn({
     underwriterData && Array.isArray(underwriterData)
       ? BigInt(underwriterData[1])
       : BigInt(0);
-  console.log('Approval Amount (BigInt):', approvalAmount);
-  console.log('Approval Amount (String):', approvalAmount.toString());
 
   // Convert BigInt to string for formatting
   const formattedApprovalAmount = formatAmount(
     Number(approvalAmount),
     decimals
   );
-
-  console.log('Formatted Approval Amount:', formattedApprovalAmount);
 
   // Fetch loan applications
   const { data: loanApplicationsData } = useQuery({
@@ -249,58 +246,76 @@ export default function Earn({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {(
-                    loanApplicationsData as unknown as LoanApplicationExtended[]
-                  )?.map((item) => (
-                    <TableRow key={item?.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-x-2 py-1 text-left">
-                          <Avatar>
-                            <AvatarImage src={item.userPictureUrl ?? ''} />
-                            <AvatarFallback>{item.userName}</AvatarFallback>
-                          </Avatar>
-                          {item?.userName}
-                        </div>
-                      </TableCell>
-                      <TableCell className="">
-                        {item?.humanCheck ? (
-                          <p className="text-xl font-bold text-green-700">✅</p>
-                        ) : (
-                          <p className="text-xl font-bold text-red-700">❌</p>
-                        )}
-                      </TableCell>
-
-                      <TableCell className="text-left">{`$${item?.amount?.toFixed(
-                        2
-                      )}`}</TableCell>
-                      <TableCell className="text-center">
-                        {' '}
-                        {item?.assetType}
-                      </TableCell>
-
-                      <TableCell className="text-center">
-                        {item?.builderScore}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item?.nominationsReceived}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item?.followers}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-center gap-2">
-                          <ApproveModalButton
-                            loanApplication={item}
-                            assetType={selectedAssetType}
-                          />
-                          <DenyModalButton
-                            loanApplication={item}
-                            assetType={selectedAssetType}
-                          />
+                  {(loanApplicationsData as unknown as LoanApplicationExtended[])
+                    ?.filter((item) => item.assetType === selectedAssetType)
+                    ?.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="h-24 text-center">
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <FileX className="h-8 w-8 text-gray-400" />
+                          <p className="text-lg font-medium text-gray-500">
+                            No hay solicitudes de préstamo pendientes en {selectedAssetType}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            Las solicitudes aparecerán aquí cuando los usuarios apliquen para un préstamo
+                          </p>
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    (loanApplicationsData as unknown as LoanApplicationExtended[])
+                      ?.filter((item) => item.assetType === selectedAssetType)
+                      ?.map((item) => (
+                        <TableRow key={item?.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-x-2 py-1 text-left">
+                              <Avatar>
+                                <AvatarImage src={item.userPictureUrl ?? ''} />
+                                <AvatarFallback>{item.userName}</AvatarFallback>
+                              </Avatar>
+                              {item?.userName}
+                            </div>
+                          </TableCell>
+                          <TableCell className="">
+                            {item?.humanCheck ? (
+                              <p className="text-xl font-bold text-green-700">✅</p>
+                            ) : (
+                              <p className="text-xl font-bold text-red-700">❌</p>
+                            )}
+                          </TableCell>
+
+                          <TableCell className="text-left">{`$${item?.amount?.toFixed(
+                            2
+                          )}`}</TableCell>
+                          <TableCell className="text-center">
+                            {' '}
+                            {item?.assetType}
+                          </TableCell>
+
+                          <TableCell className="text-center">
+                            {item?.builderScore}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {item?.nominationsReceived}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {item?.followers}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-center gap-2">
+                              <ApproveModalButton
+                                loanApplication={item}
+                                assetType={selectedAssetType}
+                              />
+                              <DenyModalButton
+                                loanApplication={item}
+                                assetType={selectedAssetType}
+                              />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  )}
                 </TableBody>
               </Table>
             </div>

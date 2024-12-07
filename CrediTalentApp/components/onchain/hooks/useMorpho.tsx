@@ -22,15 +22,16 @@ export const useMorpho = () => {
   const { writeContract: withdrawAsync, data: withdrawHash } = useWriteContract();
   const { writeContract: repayAsync, data: repayHash } = useWriteContract();
 
-  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow, data: borrowReceipt } = 
+  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow, data: borrowReceipt } =
     useWaitForTransactionReceipt({ hash: borrowHash });
-  const { isLoading: isLoadingSupply, isSuccess: isSuccessSupply } = 
+  const { isLoading: isLoadingSupply, isSuccess: isSuccessSupply } =
     useWaitForTransactionReceipt({ hash: supplyHash });
-  const { isLoading: isLoadingWithdraw, isSuccess: isSuccessWithdraw } = 
+  const { isLoading: isLoadingWithdraw, isSuccess: isSuccessWithdraw } =
     useWaitForTransactionReceipt({ hash: withdrawHash });
-  const { isLoading: isLoadingRepay, isSuccess: isSuccessRepay } = 
+  const { isLoading: isLoadingRepay, isSuccess: isSuccessRepay } =
     useWaitForTransactionReceipt({ hash: repayHash });
 
+  console.log('🚀 ~ useMorpho ~ borrowReceipt:', borrowReceipt)
   const supply = async (
     marketParams: MarketParams,
     assets: bigint,
@@ -43,7 +44,7 @@ export const useMorpho = () => {
         functionName: "supply",
         args: [marketParams, assets, onBehalf],
       });
-    } catch(e) {
+    } catch (e) {
       console.error('Error in supply:', e);
     }
   };
@@ -62,7 +63,7 @@ export const useMorpho = () => {
         functionName: "withdraw",
         args: [marketParams, assets, shares, onBehalf, receiver],
       });
-    } catch(e) {
+    } catch (e) {
       console.error('Error in withdraw:', e);
     }
   };
@@ -82,7 +83,7 @@ export const useMorpho = () => {
         args: [marketParams, assets, shares, onBehalf, receiver],
       });
       console.log(`borrowResult: ${borrowResult}`);
-    } catch(e) {
+    } catch (e) {
       console.error('Error in borrow:', e);
     }
   };
@@ -99,7 +100,7 @@ export const useMorpho = () => {
         functionName: "repay",
         args: [marketParams, assets, onBehalf],
       });
-    } catch(e) {
+    } catch (e) {
       console.error('Error in repay:', e);
     }
   };
@@ -109,17 +110,17 @@ export const useMorpho = () => {
     supply,
     isLoadingSupply,
     isSuccessSupply,
-    
+
     // Withdraw
-    withdraw, 
+    withdraw,
     isLoadingWithdraw,
     isSuccessWithdraw,
-    
+
     // Borrow
     borrow,
     isLoadingBorrow,
     isSuccessBorrow,
-    
+
     // Repay
     repay,
     isLoadingRepay,
