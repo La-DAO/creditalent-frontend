@@ -40,6 +40,8 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow, data: borrowReceipt } =
     useWaitForTransactionReceipt({ hash: borrowHash });
 
+  console.log('🚀 ~ BorrowForm ~ borrowReceipt:', borrowReceipt)
+
   // HANDLE SUCCESS
   useEffect(() => {
     if (isSuccessBorrow) {

@@ -46,6 +46,7 @@ export function ApproveModalButton({
   useEffect(() => {
     if (isSuccessApproveTx && !isLoadingApproveTx) {
       const marketId = approveReceipt?.logs?.[1]?.topics?.[1]
+      console.log('🚀 ~ useEffect ~ marketId:', marketId)
     }
   }, [isSuccessApproveTx, isLoadingApproveTx])
 
