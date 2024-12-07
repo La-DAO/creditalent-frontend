@@ -142,3 +142,35 @@ export const saveRejectedCreditInfo = async (
     return null
   }
 }
+
+
+export const saveMarketIdCreditInfo = async (
+  walletId: string,
+  assetType: string,
+  marketId: string,
+) => {
+  try {
+    console.log( 'saveMarketIdCreditInfo', walletId, assetType, marketId );
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CREDITALENT_API_URL}/api/credit-info`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ walletId, assetType, marketId }),
+    })
+
+    // Check if the response is successful
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to create loan application')
+      }
+    console.log('Credit Talent API Response - saveMarketIdCreditInfo:', response)
+    const data = await response.json()
+
+    return data
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}

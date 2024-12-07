@@ -18,6 +18,7 @@ import { MORPHO_CONTRACT_ADDRESS } from "./onchain/hooks/useMorpho";
 import { MorphoABI } from "@/components/onchain/abis";
 import { parseUnits } from "viem";
 import { useToken } from "./onchain/hooks/useErc20";
+import { saveMarketIdCreditInfo } from "@/controllers/creditalentApi";
 
 interface BorrowFormProps {
   creditInfo?: CreditInfoType;
@@ -28,6 +29,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   const [borrowAmount, setBorrowAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<AssetType>(ASSET_TYPES.XOC);
+  const [marketId, setMarketId] = useState<string>("");
 
   const hasApprovedApplications = creditInfo?.[selectedAsset]?.status === "APPROVED";
   const availableCredit = creditInfo?.[selectedAsset]?.amount || 0;
@@ -37,9 +39,19 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   const { address: userAddress } = useAccount();
   const token = useToken(selectedAsset);
 
-  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow } =
+  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow, data: borrowReceipt } =
     useWaitForTransactionReceipt({ hash: borrowHash });
 
+
+  // SAVE MARKET ID ON SUCCESS 
+  useEffect(() => {
+    if (isSuccessBorrow && !isLoadingBorrow) {
+      if (borrowReceipt?.logs?.[0]?.topics?.[1]) {
+        setMarketId(borrowReceipt.logs[0].topics[1]);
+        saveMarketIdCreditInfo(userAddress, selectedAsset, borrowReceipt.logs[0].topics[1]);
+      }
+    }
+  }, [borrowReceipt]);
 
   // HANDLE SUCCESS
   useEffect(() => {
@@ -77,6 +89,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
           irm: "0x46415998764C29aB2a25CbeA6254146D50D22687",
           lltv: BigInt(980000000000000000),
         };
+
         const payload = { 
           address: MORPHO_CONTRACT_ADDRESS,
           abi: MorphoABI,
@@ -84,12 +97,6 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
           args: [marketParams, borrowAmountInWei, BigInt(0), onBehalf, receiver],
         }
 
-        console.log({
-          address: payload.address,
-          abi: payload.abi,
-          functionName: payload.functionName,
-          args: payload.args,
-        })
         await borrowAsync(payload);
       } catch (e) {
         toast.error("Error: ", e.toString());
@@ -105,7 +112,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   return (
     <div className="space-y-4">
       <div className="text-sm text-muted-foreground">
-        Specify the quantity to borrow V11
+        Specify the quantity to borrow V12
       </div>
 
       <div className="flex items-center gap-4">

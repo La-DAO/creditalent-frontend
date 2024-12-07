@@ -1,6 +1,6 @@
 "use client";
 
-import React, {  useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,12 +15,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
-  AssetType,
   LoanApplicationExtended,
 } from "@/types/creditalent-responses";
 import { Loader2 } from "lucide-react"; // Import Loader2 from lucide-react
 import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
 import { saveApproveCreditInfo } from "@/controllers/creditalentApi";
+import { AssetType } from "@/lib/constants";
 
 export function ApproveModalButton({
   loanApplication,
@@ -39,8 +39,16 @@ export function ApproveModalButton({
     isPending: isApproveCreditPending,
   } = useWriteContract();
 
-  const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx } =
+  const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx, data: approveReceipt } =
     useWaitForTransactionReceipt({ hash: approveCreditHash });
+
+  // HANDLE SUCCESS TX
+  useEffect(() => {
+    if (isSuccessApproveTx && !isLoadingApproveTx) {
+      const marketId = approveReceipt?.logs?.[1]?.topics?.[1]
+      console.log('🚀 ~ useEffect ~ marketId:', marketId)
+    }
+  }, [isSuccessApproveTx, isLoadingApproveTx])
 
   const handleApprove = async () => {
     if (!assetType) {
