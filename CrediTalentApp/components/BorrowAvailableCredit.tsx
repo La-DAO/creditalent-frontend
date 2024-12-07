@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { getCreditInfo } from "../controllers/creditalentApi";
-import { CREDIT_STATUS_LABEL, DEFAULT_CREDIT_STATUS_LABEL } from "@/lib/constants";
 import { BorrowForm } from "./BorrowForm";
 import CreditStatus from './CreditStatus';
 
