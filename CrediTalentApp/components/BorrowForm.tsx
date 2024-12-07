@@ -18,6 +18,7 @@ import { MORPHO_CONTRACT_ADDRESS } from "./onchain/hooks/useMorpho";
 import { MorphoABI } from "@/components/onchain/abis";
 import { parseUnits } from "viem";
 import { useToken } from "./onchain/hooks/useErc20";
+import { borrowedCredit } from "@/controllers/creditalentApi";
 
 interface BorrowFormProps {
   creditInfo?: CreditInfoType;
@@ -37,14 +38,16 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
   const { address: userAddress } = useAccount();
   const token = useToken(selectedAsset);
 
-  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow, data: borrowReceipt } =
+  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow } =
     useWaitForTransactionReceipt({ hash: borrowHash });
 
-  console.log('🚀 ~ BorrowForm ~ borrowReceipt:', borrowReceipt)
 
   // HANDLE SUCCESS
   useEffect(() => {
     if (isSuccessBorrow) {
+      const newAmount = (creditInfo?.[selectedAsset]?.amount || 0) - parseFloat(borrowAmount);
+      const newBorrowedAmount = (creditInfo?.[selectedAsset]?.borrowedAmount || 0) + parseFloat(borrowAmount);
+      borrowedCredit(userAddress as string, selectedAsset, newAmount, newBorrowedAmount);
       toast.success("¡Préstamo exitoso!");
     }
   }, [isSuccessBorrow]);

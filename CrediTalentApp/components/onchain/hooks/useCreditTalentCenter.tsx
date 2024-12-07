@@ -191,6 +191,7 @@ export const useCreditTalentCenter = (assetType: AssetType) => {
   } as ApplicationInfo : undefined;
 
   return {
+    address: CONTRACT_ADDRESSES[assetType],
     // Estado
     application,
     loanInfo,

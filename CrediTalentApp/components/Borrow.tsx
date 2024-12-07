@@ -73,9 +73,9 @@ export default function Component() {
           </CardHeader>
           <CardContent className="space-y-8">
             {[
-              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowAmount || "$0", apy: "7.5%" },
-              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowAmount || "$0", apy: "7.5%" },
-              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowAmount || "$0", apy: "7.5%" }, // DEMO1
+              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowedAmount || "$0", apy: "7.5%" },
+              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowedAmount || "$0", apy: "7.5%" },
+              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowedAmount || "$0", apy: "7.5%" }, // DEMO1
             ].map((loan) => (
               <div key={loan.label} className="space-y-1">
                 <div className="text-sm text-muted-foreground">
