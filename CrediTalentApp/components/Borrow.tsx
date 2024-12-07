@@ -15,12 +15,19 @@ import NoPassportCard from "./noPassportCard";
 import { LoaderCircle } from "lucide-react";
 import { NewCreditRequestModal } from "./onchain/components/newCreditRequestModalButton";
 import BorrowAvailableCredit from "./BorrowAvailableCredit";
+import { getCreditInfo } from "@/controllers/creditalentApi";
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
 
   const [creditAllowed, setCreditAllowed] = useState(0);
   const { address: userAddress } = useAccount();
+  const { data: creditInfoData, isLoading } = useQuery({
+    queryKey: ["creditInfoKey", userAddress],
+    queryFn: () => getCreditInfo(userAddress as string),
+    enabled: Boolean(userAddress),
+  });
+
 
   const { data: talentPassportData, status: talentPassportQueryStatus } =
     useQuery({
@@ -66,9 +73,9 @@ export default function Component() {
           </CardHeader>
           <CardContent className="space-y-8">
             {[
-              { label: "Total $TALENT Borrowed", amount: "$0", apy: "7.5%" },
-              { label: "Total $USDC Borrowed", amount: "$0", apy: "7.5%" },
-              { label: "Total $XOC Borrowed", amount: "$0", apy: "7.5%" },
+              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowAmount || "$0", apy: "7.5%" },
+              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowAmount || "$0", apy: "7.5%" },
+              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowAmount || "$0", apy: "7.5%" }, // DEMO1
             ].map((loan) => (
               <div key={loan.label} className="space-y-1">
                 <div className="text-sm text-muted-foreground">
