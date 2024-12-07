@@ -3,9 +3,11 @@
 import Link from "next/link"
 import AuthButton from "./buttons/authButton"
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const isLoggedIn = useIsLoggedIn();
+  const pathname = usePathname();
 
   return (
     <>
@@ -17,12 +19,26 @@ export default function Header() {
         <div className="hidden items-center space-x-8 md:flex">
 
           {isLoggedIn && (
-            <Link href="/borrow" className="text-xl text-[#FF5722] hover:text-gray-900">
+            <Link 
+              href="/borrow" 
+              className={`text-xl ${
+                pathname === '/borrow' 
+                  ? 'text-gray-900 border-b-2 border-[#FF5722]' 
+                  : 'text-[#FF5722] hover:text-gray-900 border-b-2 border-transparent hover:border-[#FF5722]'
+              }`}
+            >
               Borrow
             </Link>
           )}
           {isLoggedIn && (
-            <Link href="/earn" className="text-xl text-[#FF5722] hover:text-gray-900">
+            <Link 
+              href="/earn" 
+              className={`text-xl ${
+                pathname === '/earn' 
+                  ? 'text-gray-900 border-b-2 border-[#FF5722]' 
+                  : 'text-[#FF5722] hover:text-gray-900 border-b-2 border-transparent hover:border-[#FF5722]'
+              }`}
+            >
               Earn
             </Link>
           )}
