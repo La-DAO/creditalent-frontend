@@ -132,11 +132,14 @@ export default function Earn({
         <TabsList className="w-full max-w-md">
           <TabsTrigger
             value="add-balance"
-            className="flex-1 data-[state=active]:text-[#ff4405] data-[state=active]:border-b-[#ff4405]"
+            className="flex-1 data-[state=active]:bg-[#FF4405] data-[state=active]:text-white"
           >
             Add/Balance Funds
           </TabsTrigger>
-          <TabsTrigger value="approve" className="flex-1">
+          <TabsTrigger 
+            value="approve" 
+            className="flex-1 data-[state=active]:bg-[#FF4405] data-[state=active]:text-white"
+          >
             Approve Applications
           </TabsTrigger>
         </TabsList>
