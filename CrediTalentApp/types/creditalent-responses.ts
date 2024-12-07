@@ -111,6 +111,7 @@ export type CreditInfoType = {
 
 type CreditInfo = {
   amount: number
+  borrowedAmount: number
   status:string
 }
 

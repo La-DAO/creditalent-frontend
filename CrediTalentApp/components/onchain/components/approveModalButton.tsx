@@ -1,7 +1,6 @@
 "use client";
 
-import React, {  useEffect, useState } from "react";
-import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,13 +13,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import {
-  LoanApplicationExtended,
-} from "@/types/creditalent-responses";
-import { Loader2 } from "lucide-react"; // Import Loader2 from lucide-react
-import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
-import { saveApproveCreditInfo } from "@/controllers/creditalentApi";
+import { LoanApplicationExtended } from "@/types/creditalent-responses";
+import { Loader2 } from "lucide-react";
 import { AssetType } from "@/lib/constants";
+import { useCreditTalentCenter } from "../hooks/useCreditTalentCenter";
+import { Address } from "viem";
+import { approveLoanApplication } from "@/controllers/creditalentApi";
+
+const MAX_UINT256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
 export function ApproveModalButton({
   loanApplication,
@@ -34,61 +34,49 @@ export function ApproveModalButton({
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    data: approveCreditHash,
-    writeContractAsync: approveCredit,
-    isPending: isApproveCreditPending,
-  } = useWriteContract();
+    approveCredit,
+    isLoadingApproveCredit,
+    isSuccessApproveCredit,
+  } = useCreditTalentCenter(assetType!);
 
-  const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx, data: approveReceipt } =
-    useWaitForTransactionReceipt({ hash: approveCreditHash });
-
-  // HANDLE SUCCESS TX
+  // Monitorear éxito de la transacción
   useEffect(() => {
-    if (isSuccessApproveTx && !isLoadingApproveTx) {
-      const marketId = approveReceipt?.logs?.[1]?.topics?.[1]
-      console.log('🚀 ~ useEffect ~ marketId:', marketId)
+    if (isSuccessApproveCredit) {
+      toast.success("¡Solicitud aprobada exitosamente!");
+      setIsOpen(false);
+      setIsLoading(false);
     }
-  }, [isSuccessApproveTx, isLoadingApproveTx])
+  }, [isSuccessApproveCredit]);
 
   const handleApprove = async () => {
-    if (!assetType) {
-      console.error("Unknown Asset type: ", assetType);
+    if (!assetType || !amount) {
+      toast.error("Por favor, ingresa un monto válido");
       return;
     }
+
     try {
       setIsLoading(true);
-      const talentCenterContract = talentCenterContractFactory(assetType!);
-      const assetAmount = parseFloat(amount) || 0;
-      const amountInWei = BigInt(assetAmount * 1e18);
-      const maxUint256BigNumber = BigInt(
-        "115792089237316195423570985008687907853269984665640564039457584007913129639935"
-      );
-      const applicationId = loanApplication?.id as number
-      const txTalentCenter = await approveCredit({
-        address: talentCenterContract.address,
-        abi: talentCenterContract.abi,
-        functionName: "approveCredit",
-        args: [
-          loanApplication.walletId,
-          +(loanApplication?.applicantId),
-          amountInWei,
-          maxUint256BigNumber,
-        ],
-      });
+      const applicationId = BigInt(loanApplication?.applicantId);
       
-      // TODO: CRIS - use event for confirm transaction and save on DB
-      await saveApproveCreditInfo(applicationId, loanApplication.walletId, assetType, +amount)
-
-      console.log('🚀 ~ handleApprove ~ isSuccessApproveTx:', isSuccessApproveTx)
-      console.log('🚀 ~ handleApprove ~ txTalentCenter:', txTalentCenter)
-      toast.success("Solicitud de aprobación enviada!"); // Success message
-      setIsOpen(false);
-    } catch (error) {
-      console.error("Approve failed:", error);
-      toast.error(
-        "Hubo un error al aprobar la solicitud. Por favor, inténtalo de nuevo."
+      // Usar el hook para aprobar el crédito
+      await approveCredit(
+        loanApplication.walletId as Address,
+        applicationId,
+        amount,
+        BigInt(MAX_UINT256)
       );
-    } finally {
+
+      // La llamada a la API se mantiene
+      await approveLoanApplication(
+        loanApplication.id as number, 
+        loanApplication.walletId, 
+        assetType, 
+        +amount
+      );
+
+    } catch (err) {
+      console.error('Error en approveCredit:', err);
+      toast.error("Error al procesar la aprobación");
       setIsLoading(false);
     }
   };
@@ -107,18 +95,16 @@ export function ApproveModalButton({
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
             Aprobar Solicitud
-          </DialogTitle>{" "}
-          {/* Changed title */}
+          </DialogTitle>
           <DialogDescription className="text-center text-base">
             ¿Estás seguro que quieres aprobar la solicitud de{" "}
-            {loanApplication.applicant?.name}? {/* Added applicant name */}
+            {loanApplication.applicant?.name}?
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 grid gap-4">
           <div>
-            <Label htmlFor="amount">Cantidad a Aprobar (ETH)</Label>{" "}
-            {/* Clearer label */}
+            <Label htmlFor="amount">Cantidad a Aprobar (ETH)</Label>
             <Input
               id="amount"
               type="number"
@@ -130,16 +116,16 @@ export function ApproveModalButton({
             <Button
               className="bg-[#ff4405] hover:bg-[#ff4405]/90 text-white"
               onClick={handleApprove}
-              disabled={isApproveCreditPending || !amount || isLoading}
+              disabled={isLoadingApproveCredit || !amount || isLoading}
             >
-              {" "}
-              {/* Changed variant */}
-              {isLoadingApproveTx || isLoading ? (
-                <Loader2 className="animate-spin h-5 w-5 mr-2" /> // Display Loader2 while loading
+              {isLoadingApproveCredit || isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="animate-spin h-5 w-5" />
+                  <span>Procesando...</span>
+                </div>
               ) : (
                 "Aprobar"
-              )}{" "}
-              {/* Changed text */}
+              )}
             </Button>
             <Button
               variant="outline"

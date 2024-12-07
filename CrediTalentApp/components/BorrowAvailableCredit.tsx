@@ -5,8 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { getCreditInfo } from "../controllers/creditalentApi";
-import { CREDIT_STATUS_LABEL, DEFAULT_CREDIT_STATUS_LABEL } from "@/lib/constants";
 import { BorrowForm } from "./BorrowForm";
+import CreditStatus from './CreditStatus';
 
 export default function BorrowAvailableCredit() {
   const { address: userAddress } = useAccount();
@@ -28,39 +28,27 @@ export default function BorrowAvailableCredit() {
         <div className="rounded-lg bg-gray-50 p-6 space-y-4">
           <div className="space-y-3 text-sm">
             {/* XOC Credit Info */}
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-gray-400" />
-              <span className="text-sm">
-                {CREDIT_STATUS_LABEL[creditInfoData?.xoc?.status] ?? DEFAULT_CREDIT_STATUS_LABEL}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>XOC Available:</span>
-              <span>{creditInfoData?.xoc?.amount || 0}</span>
+            <div className="flex flex-col gap-2">
+              <CreditStatus status={creditInfoData?.xoc?.status} />
+              <div className="flex justify-between items-center">
+                <span>XOC Available:</span>
+                <span>{creditInfoData?.xoc?.amount || 0} XOC</span>
+              </div>
             </div>
 
             {/* TALENT Credit Info */}
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-gray-400" />
-              <span className="text-sm">
-                {CREDIT_STATUS_LABEL[creditInfoData?.talent?.status] ?? DEFAULT_CREDIT_STATUS_LABEL}
-              </span>
-            </div>
+            <CreditStatus status={creditInfoData?.talent?.status} />
+
             <div className="flex justify-between">
               <span>Talent Available:</span>
-              <span>{creditInfoData?.talent?.amount || 0}</span>
+              <span>{creditInfoData?.talent?.amount || 0} Talent</span>
             </div>
 
             {/* USDC Credit Info */}
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-gray-400" />
-              <span className="text-sm">
-                {CREDIT_STATUS_LABEL[creditInfoData?.usdc?.status] ?? DEFAULT_CREDIT_STATUS_LABEL}
-              </span>
-            </div>
+            <CreditStatus status={creditInfoData?.usdc?.status} />
             <div className="flex justify-between">
               <span>USDC Available:</span>
-              <span>{creditInfoData?.usdc?.amount || 0}</span>
+              <span>{creditInfoData?.usdc?.amount || 0} USDC</span>
             </div>
           </div>
         </div>

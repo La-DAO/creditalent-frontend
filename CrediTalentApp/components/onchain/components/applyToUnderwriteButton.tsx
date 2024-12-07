@@ -1,81 +1,68 @@
-import { useState } from "react";
-import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { Button } from "../../ui/button";
-import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
-import { toast } from "sonner";
-import { erc20ContractFactory } from "../factories/erc20ContractFactory";
-import { Loader2 } from "lucide-react";
-import { AssetType } from "@/lib/constants";
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { useToken } from '../hooks/useErc20';
+import { useCreditTalentCenter } from '../hooks/useCreditTalentCenter';
+import { AssetType } from '@/lib/constants';
+import { Loader2 } from 'lucide-react';
 
-export default function ApplytoUnderWriteButton({
-  assetType,
-  amount,
-}: {
-  assetType?: AssetType;
+interface ApplyToUnderwriteButtonProps {
   amount: number;
-}) {
-  const { writeContractAsync: applytoUnderWrite } = useWriteContract();
-  const { writeContractAsync: approveERC20, data: hash } = useWriteContract();
+  assetType: AssetType;
+}
 
-  const { isLoading: isLoadingApproveTx, isSuccess: isSuccessApproveTx } =
-  useWaitForTransactionReceipt({ hash });
-  
+export default function ApplyToUnderwriteButton({ amount, assetType }: ApplyToUnderwriteButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const token = useToken(assetType);
+  const creditTalentCenter = useCreditTalentCenter(assetType);
 
-  // Function to handle deposit or withdraw
+
+  // Manejar éxito de las transacciones
+  useEffect(() => {
+    if (token.isSuccessApprove && !token.isLoadingApprove) {
+      creditTalentCenter.applyForUnderwriting(amount.toString());
+    }
+  }, [token.isSuccessApprove, token.isLoadingApprove]);
+
+  // Manejar éxito de Underwrite
+  useEffect(() => {
+    if (creditTalentCenter.isSuccessApplyToUnderwrite && !creditTalentCenter.isLoadingApplyToUnderwrite) {
+      toast.success("¡Aplicación exitosa como underwriter!");
+      setIsLoading(false);
+    }
+  }, [creditTalentCenter.isSuccessApplyToUnderwrite, creditTalentCenter.isLoadingApplyToUnderwrite]);
+
   const handleApplytoUnderWrite = async () => {
-    if (!assetType) {
-      console.error("Unknown Asset type: ", assetType);
+    if (!assetType || !amount) {
+      toast.error("Por favor, ingresa un monto válido");
       return;
     }
+
     try {
-      const talentCenterContract = talentCenterContractFactory(assetType!);
-      const erc20Contract = erc20ContractFactory(assetType!);
-      const assetAmount = parseFloat(`${amount}`) || 0;
-      const amountInWei = BigInt(assetAmount * 1e18);
-
       setIsLoading(true);
-      const txERC20 = await approveERC20({
-        abi: erc20Contract.abi,
-        address: erc20Contract.address,
-        functionName: "approve",
-        args: [talentCenterContract.address, amountInWei], // Convert amount to 18 decimals
-      });
-
-      const txTalentCenter = await applytoUnderWrite({
-        abi: talentCenterContract.abi,
-        address: talentCenterContract.address,
-        functionName: "applyToUnderwrite",
-        args: [amountInWei],
-      });
-
-      console.log('🚀 ~ handleApplytoUnderWrite ~ txERC20:', txERC20)
-      console.log('🚀 ~ handleApplytoUnderWrite ~ txTalentCenter:', txTalentCenter)
-      console.log('🚀 ~ handleApplytoUnderWrite ~ isSuccessApproveTx:', isSuccessApproveTx)
-      toast.success("Success");
+      await token.approve(creditTalentCenter.address, amount.toString());
     } catch (err) {
-      toast.error("Error on applyToUnderwrite ");
-      console.error(err);
-    } finally {
+      console.error('Error en applyToUnderwrite:', err);
+      toast.error("Error al procesar la transacción");
       setIsLoading(false);
     }
   };
 
+  const isProcessing = isLoading || token.isLoadingApprove || creditTalentCenter.isLoadingApplyToUnderwrite;
+
   return (
-    <div className="flex gap-2 mb-6">
-      <Button
-        className="bg-[#ff4405] hover:bg-[#ff4405]/90 text-white"
-        disabled={!assetType || !amount || +amount <= 0}
-        onClick={() => {
-          handleApplytoUnderWrite();
-        }}
-      >
-        {isLoading || isLoadingApproveTx ? (
-          <Loader2 className="animate-spin h-5 w-5 mr-2" /> // Display Loader2 while loading
-        ) : (
-          "Depositar"
-        )}
-      </Button>
-    </div>
+    <button
+      onClick={handleApplytoUnderWrite}
+      disabled={isProcessing}
+      className="w-full px-4 py-2 bg-[#FF5722] text-white rounded-lg hover:bg-[#FF5722]/90 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {isProcessing ? (
+        <div className="flex items-center justify-center gap-2">
+          <Loader2 className="animate-spin h-5 w-5" />
+          <span>Procesando...</span>
+        </div>
+      ) : (
+        "Aplicar como Underwriter"
+      )}
+    </button>
   );
 }
