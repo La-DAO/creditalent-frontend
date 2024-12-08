@@ -2,11 +2,7 @@
 "use client";
 
 import { useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Ecosistema from "./Ecosistema";
 import AboutPool from "./AboutPool";
 import { useQuery } from "@tanstack/react-query";
@@ -16,18 +12,22 @@ import { useEffect } from "react";
 import { CREDIT_ALLOWANCE_BY_SCORE } from "../lib/constants";
 import { BuilderScoreChart } from "./builder-score-chart";
 import NoPassportCard from "./noPassportCard";
-import { ExternalLink, LoaderCircle } from "lucide-react";
-import { createLoanApplication } from "../controllers/creditalentApi";
-import { CreateLoanApplicationData } from "@/types/creditalent-responses";
-import { TalentPassportType } from "@/types/talent-protocol-responses";
-import { NewCreditRequestModal } from "./onchain/newCreditRequestModalButton";
+import { LoaderCircle } from "lucide-react";
+import { NewCreditRequestModal } from "./onchain/components/newCreditRequestModalButton";
 import BorrowAvailableCredit from "./BorrowAvailableCredit";
+import { getCreditInfo } from "@/controllers/creditalentApi";
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
 
   const [creditAllowed, setCreditAllowed] = useState(0);
   const { address: userAddress } = useAccount();
+  const { data: creditInfoData, isLoading } = useQuery({
+    queryKey: ["creditInfoKey", userAddress],
+    queryFn: () => getCreditInfo(userAddress as string),
+    enabled: Boolean(userAddress),
+  });
+
 
   const { data: talentPassportData, status: talentPassportQueryStatus } =
     useQuery({
@@ -73,9 +73,9 @@ export default function Component() {
           </CardHeader>
           <CardContent className="space-y-8">
             {[
-              { label: "Total $TALENT Borrowed", amount: "$0", apy: "7.5%" },
-              { label: "Total $USDC Borrowed", amount: "$0", apy: "7.5%" },
-              { label: "Total $XOC Borrowed", amount: "$0", apy: "7.5%" },
+              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowedAmount || "$0", apy: "7.5%" },
+              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowedAmount || "$0", apy: "7.5%" },
+              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowedAmount || "$0", apy: "7.5%" }, // DEMO1
             ].map((loan) => (
               <div key={loan.label} className="space-y-1">
                 <div className="text-sm text-muted-foreground">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -12,21 +12,16 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { createLoanApplication } from "@/controllers/creditalentApi";
-import {
-  AssetType,
-  CreateLoanApplicationData,
-} from "@/types/creditalent-responses";
+import { CreateLoanApplicationData } from "@/types/creditalent-responses";
 import { TalentPassportType } from "@/types/talent-protocol-responses";
 import {
   useAccount,
-  useWriteContract,
-  useClient,
-  useWaitForTransactionReceipt,
 } from "wagmi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { isPassportTalentRequired as isTalentPassportRequired } from "@/lib/utils";
-import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
-import { readContract } from "viem/actions";
+import { AssetType } from "@/lib/constants";
+import { useCreditTalentCenter } from "../hooks/useCreditTalentCenter";
+import { useNetworkSwitch } from "../hooks/useNetworkSwitch";
+import { getApplicationExists } from "@/types/contracts/CreditalentCenter";
 
 export function NewCreditRequestModal({
   talentPassportData,
@@ -37,129 +32,89 @@ export function NewCreditRequestModal({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("");
-  const [selectedToken, setSelectedToken] = useState("xoc"); // Default to $xoc
-  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const [selectedToken, setSelectedToken] = useState<AssetType>("xoc");
+  const [isLoading, setIsLoading] = useState(false);
+
   const { address: accountAddress } = useAccount();
-  const { primaryWallet, user } = useDynamicContext();
-  const { writeContractAsync, data: applyToCreditHash } = useWriteContract();
+  const { user } = useDynamicContext();
+  const { switchToBaseSepolia } = useNetworkSwitch();
+
+  // Usar los nuevos hooks
   const {
-    isLoading: isLoadingApplyToCredit,
-    isSuccess: isSuccessApplyToCredit,
-  } = useWaitForTransactionReceipt({
-    hash: applyToCreditHash,
-  });
-  const client = useClient();
+    application,
+    applyForCredit,
+    isLoadingApplyToCredit,
+    isSuccessApplyToCredit,
+    getApplicationInfoAsync,
+  } = useCreditTalentCenter(selectedToken);
 
   const handleRequestCreditLine = async () => {
     try {
       setIsLoading(true);
-
-      const applicationId = await readLoanApplication();
-      console.log(
-        "🚀 ~ handleRequestCreditLine ~ applicationId:",
-        applicationId
-      );
-
       if (!selectedToken) {
         toast.error("Ups require, please select a asset");
         return;
       }
-      if (applicationId !== null) {
+
+      // Verificar si ya existe una aplicación
+      if (getApplicationExists(application)) {
         toast.error("Application already exists");
         return;
       }
 
-      if (talentPassportData === null && isTalentPassportRequired) {
-        toast.error("Required talent passport!");
-        return;
-      }
+      // TODO: FOR TESTING
+      // if (talentPassportData === null && isTalentPassportRequired) {
+      //   toast.error("Required talent passport!");
+      //   return;
+      // }
 
       if (accountAddress == null) {
         toast.warning("user not logged");
         return;
       }
 
-      const txHash = await writeLoanApplication();
-      
-      console.log('🚀 ~ handleRequestCreditLine ~ txHash:', txHash)
-      console.log(
-        "🚀 ~ handleRequestCreditLine ~ isSuccessApplyToCredit:",
-        isSuccessApplyToCredit
-      );
+      // Cambiar red si es necesario
+      const networkSwitched = await switchToBaseSepolia();
+      if (!networkSwitched) return;
+
+      // Usar el nuevo hook para aplicar al crédito
+      const dataHash =
+        "0x0000000000000000000000000000000000000000000000000000000000000002"; // TODO: Generar hash real
+      await applyForCredit(dataHash);
     } catch (error) {
       toast.error("Ups.." + error);
-      // ... error handling ...
     } finally {
       setIsLoading(false);
       setIsOpen(false);
     }
   };
 
-  async function writeLoanApplication() {
-    console.log("Antes de write contract");
-
-    try {
-      if (primaryWallet?.connector.supportsNetworkSwitching()) {
-        toast.info("Cambia tu red a Base Sepolia");
-        await primaryWallet.switchNetwork(84532);
-        console.log("Success! Network switched");
-      }
-
-      const currentChainId = await primaryWallet?.getNetwork();
-      if (currentChainId !== 84532) {
-        return toast.error(
-          "Red no soportada, cambia de red y vuelva a intentar"
-        );
-      }
-      const inputApplyToCredit =
-        "0x0000000000000000000000000000000000000000000000000000000000000002";
-      const talentCenterContract = talentCenterContractFactory(
-        selectedToken as AssetType
-      );
-
-      const hash = await writeContractAsync({
-        address: talentCenterContract.address,
-        abi: talentCenterContract.abi,
-        functionName: "applyToCredit",
-        args: [inputApplyToCredit], //TODO:  `${convertToBytes32(loanApplicationId)}`
-      });
-      console.log("🚀 ~ writeLoanApplication ~ hash:", hash);
-      return hash;
-    } catch (error) {
-      if (`${error}`.includes("applicationAlreadyExists")) {
-        throw Error("Application already exists");
-      }
+  // Manejar el éxito de la transacción
+  useEffect(() => {
+    if (!isLoadingApplyToCredit && isSuccessApplyToCredit && !getApplicationExists(application) ) {
+     
+      // Agregamos await y hacemos la función async
+      (async () => {
+        try {
+          const applicationInfo = await getApplicationInfoAsync();
+          const dataToSend = createLoanApplicationDataFromTalentPassport(
+            accountAddress!,
+            +amount,
+            parseInt(applicationInfo?.id?.toString() ?? ""),
+            creditAllowed,
+            selectedToken,
+            talentPassportData
+          );
+    
+          await createLoanApplication(dataToSend);
+          toast.success("Credit line requested successfully");
+        } catch (error) {
+          toast.error("Error creating loan application");
+          console.error(error);
+        }
+      })();
     }
-    console.log("despues de write contract");
-  }
-
-  async function readLoanApplication(): Promise<number | null> {
-    if (!client) {
-      toast.error("Client required");
-      return null;
-    }
-    const talentCenterContract = talentCenterContractFactory(
-      selectedToken as AssetType
-    );
-    console.log(
-      "🚀 ~ readLoanApplication ~ talentCenterContract:",
-      talentCenterContract
-    );
-
-    const [idHex] = await readContract(client!, {
-      abi: talentCenterContract.abi, // This assumes your abi is correctly typed
-      address: talentCenterContract.address,
-      functionName: "applicationInfo",
-      args: [accountAddress],
-    });
-
-    const id = parseInt(idHex, 16);
-
-    if (id === 0) return null;
-    else {
-      return id;
-    }
-  }
+  }, [isLoadingApplyToCredit, isSuccessApplyToCredit, application]);
 
   const createLoanApplicationDataFromTalentPassport = (
     walletId: string, // Wallet Id
@@ -184,37 +139,13 @@ export function NewCreditRequestModal({
       nominationsReceived: talentPassport?.nominations_received_count ?? -1,
       followers: totalFollowerCount ?? -1,
       walletId: walletId,
-      applicantId: applicationId,
+      applicantId: applicationId.toString(),
       userName: user?.username ?? "-",
       userPictureUrl: talentPassportData?.user?.profile_picture_url ?? "",
     };
 
     return loanApplicationData;
   };
-
-  // HANDLE SUCCESS TX APPLY TO CREDIT
-  // TODO: CRIS - use event for confirm transaction and save on DB
-  if (!isLoadingApplyToCredit && isSuccessApplyToCredit) {
-    console.log("🟢 SUCCESS TX!");
-    readLoanApplication().then((applicationId) => {
-      console.log("🚀 ~ applicationId:", applicationId);
-      if (!applicationId || applicationId === null) {
-        console.log("Unknown applicationId:", applicationId);
-      }
-
-      const dataToSend = createLoanApplicationDataFromTalentPassport(
-        accountAddress!,
-        +amount,
-        +applicationId,
-        creditAllowed,
-        selectedToken,
-        talentPassportData // Type assertion if needed
-      );
-      console.log("🚀 ~ dataToSend:", dataToSend);
-
-      createLoanApplication(dataToSend);
-    }); //
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

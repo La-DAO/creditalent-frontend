@@ -11,7 +11,7 @@ export type CreateLoanApplicationData = {
   nominationsReceived: number
   followers: number
   walletId: string
-  applicantId: number
+  applicantId: string
   reviewedById?: number
 }
 
@@ -111,8 +111,8 @@ export type CreditInfoType = {
 
 type CreditInfo = {
   amount: number
+  borrowedAmount: number
   status:string
 }
 
 
-export  type AssetType = 'xoc' | 'usdc' | 'talent'

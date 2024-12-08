@@ -1,3 +1,18 @@
+export const NETWORK_CONFIG = {
+  BASE_SEPOLIA: {
+    chainId: 84532,
+    name: 'Base Sepolia'
+  }
+};
+
+export const ASSET_TYPES = {
+  XOC: 'xoc',
+  USDC: 'usdc',
+  TALENT: 'talent'
+} as const;
+
+export type AssetType = (typeof ASSET_TYPES)[keyof typeof ASSET_TYPES];
+
 export const CREDIT_ALLOWANCE_BY_SCORE = {
   0: 0,
   10: 100, // TODO: CRIS

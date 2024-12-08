@@ -1,7 +1,7 @@
-import { AssetType } from "@/types/creditalent-responses"
+import { AssetType } from "@/lib/constants"
 import { Address } from "viem"
 
-
+// TODO: CRIS - use hook useErc20
 export const erc20ContractFactory = (assetType: AssetType) => {
     const XOC_ERC20_CONTRACT = "0x4eE906B7135bDBdfC83FE40b8f2156C99FCB64c2"
     const USDC_ERC20_CONTRACT = "0x03e5f3a1ae8faea9d8ec56a3ed1e708cfede1970"

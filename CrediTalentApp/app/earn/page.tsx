@@ -10,13 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AssetType } from "@/types/creditalent-responses";
+import { ASSET_TYPES, AssetType } from "@/lib/constants";
 import { useState } from "react";
 
 export default function Home() {
   const [selectedAssetType, setSelectedAssetType] = useState<
     AssetType | undefined | null
-  >(null);
+  >(ASSET_TYPES.XOC);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-blue-50 to-white">

@@ -16,10 +16,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { saveRejectedCreditInfo } from "@/controllers/creditalentApi";
 import {
-  AssetType,
   LoanApplicationExtended,
 } from "@/types/creditalent-responses";
-import { talentCenterContractFactory } from "./factories/talentCenterContractFactory";
+import { talentCenterContractFactory } from "../factories/talentCenterContractFactory";
+import { AssetType } from "@/lib/constants";
 
 export function DenyModalButton({
   loanApplication,
