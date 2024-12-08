@@ -92,17 +92,17 @@ export function ApproveModalButton({
           variant="outline"
           className="border-secondary hover:bg-secondary/60"
         >
-          Aprobar
+          Approve
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px] md:max-w-[576px] lg:max-w-[768px]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
-            Aprobar Solicitud
+            Approve Credit Request
           </DialogTitle>{" "}
           {/* Changed title */}
           <DialogDescription className="text-center text-base">
-            ¿Estás seguro que quieres aprobar la solicitud de{" "}
+            Are you sure you want to approve this? {" "}
             {loanApplication.applicant?.name}? {/* Added applicant name */}
           </DialogDescription>
         </DialogHeader>
@@ -129,7 +129,7 @@ export function ApproveModalButton({
               {isLoadingApproveTx || isLoading ? (
                 <Loader2 className="animate-spin h-5 w-5 mr-2" /> // Display Loader2 while loading
               ) : (
-                "Aprobar"
+                "Approve"
               )}{" "}
               {/* Changed text */}
             </Button>

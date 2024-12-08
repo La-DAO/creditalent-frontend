@@ -70,7 +70,7 @@ export function DenyModalButton({
     } catch (error) {
       console.error("Deny failed:", error);
       toast.error(
-        "Hubo un error al denegar la solicitud, por favor intenta de nuevo"
+        "There was a mistake when trying to deny the application, please try again"
       );
     } finally {
       setIsLoading(false);
@@ -114,16 +114,16 @@ export function DenyModalButton({
           variant="outline"
           className="border-primary hover:bg-primary/60"
         >
-          Denegar
+          Deny
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px] md:max-w-[576px] lg:max-w-[768px]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
-            Denegar Solicitud
+            Deny Credit Request
           </DialogTitle>
           <DialogDescription className="text-center text-base">
-            ¿Estás seguro que quieres denegar la solicitud de{" "}
+            Are you sure you want to deny this request? {" "}
             {loanApplication.userName}?
           </DialogDescription>
         </DialogHeader>

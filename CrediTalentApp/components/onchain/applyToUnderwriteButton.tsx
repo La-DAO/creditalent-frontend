@@ -72,7 +72,7 @@ export default function ApplytoUnderWriteButton({
         {isLoading || isLoadingApproveTx ? (
           <Loader2 className="animate-spin h-5 w-5 mr-2" /> // Display Loader2 while loading
         ) : (
-          "Depositar"
+          "Deposit"
         )}
       </Button>
     </div>
