@@ -144,22 +144,22 @@ export default function Earn({
         <TabsContent value="add-balance" className="space-y-4 pt-4">
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-2">Caja</h2>
+              <h2 className="text-xl font-semibold mb-2">Liquidity</h2>
               <p className="text-sm text-gray-500 mb-6">
-                Deposita o retira tus fondos de manera segura.
+                Deposit funds to the CrediTalent smart contract so it can be lent out.
               </p>
 
               <div className="flex gap-2 mb-6">
                 <Button className="bg-[#ff4405] hover:bg-[#ff4405]/90 text-white">
-                  Depositar
+                  Deposit
                 </Button>
-                <Button variant="outline">Retirar</Button>
+                <Button variant="outline">Withdraw</Button>
               </div>
 
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-500 mb-2">
-                    Indica la cantidad a depositar:
+                    Indicate the amount you want to deposit:
                   </p>
                   <Input
                     type="number"
@@ -175,7 +175,7 @@ export default function Earn({
                     <span className="text-gray-500">Balance in Wallet:</span>
                     <span>
                       {isLoading
-                        ? 'Cargando...'
+                        ? 'Loading...'
                         : isError
                         ? 'Error'
                         : `${formatAmount(
@@ -218,30 +218,30 @@ export default function Earn({
                 <TableHeader className="bg-[#ff4405] text-white">
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="text-center text-white">
-                      Nombre
+                      Name
                     </TableHead>
                     <TableHead className="text-center text-white">
-                      Humano
+                      Human Check
                     </TableHead>
 
                     <TableHead className="text-center text-white">
-                      Cantidad
+                      Quantity
                     </TableHead>
                     <TableHead className="text-center text-white">
                       Asset Type
                     </TableHead>
 
                     <TableHead className="text-center text-white">
-                      Puntuación
+                      Score
                     </TableHead>
                     <TableHead className="text-center text-white">
-                      Nominaciones
+                      Nominations
                     </TableHead>
                     <TableHead className="text-center text-white">
-                      Seguidores
+                      Followers
                     </TableHead>
                     <TableHead className="text-center text-white">
-                      Acciones
+                      Actions
                     </TableHead>
                   </TableRow>
                 </TableHeader>
