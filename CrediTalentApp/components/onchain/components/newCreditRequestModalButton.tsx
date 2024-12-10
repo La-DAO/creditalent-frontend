@@ -150,9 +150,11 @@ export function NewCreditRequestModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#FF4405] hover:bg-[#FF4405]/90">
-          Request a New Credit Line
-        </Button>
+        <div className="flex justify-center">
+          <Button className="bg-[#FF4405] hover:bg-[#FF4405]/90">
+            Request a New Credit Line
+          </Button>
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px] md:max-w-[576px] lg:max-w-[768px]">
         <DialogHeader>
