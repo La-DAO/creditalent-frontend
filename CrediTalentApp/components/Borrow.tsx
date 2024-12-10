@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Ecosistema from "./Ecosistema";
-import AboutPool from "./AboutPool";
-import { useQuery } from "@tanstack/react-query";
-import { fetchTalentPassport } from "../controllers/talentProtocolApi";
-import { useAccount } from "wagmi";
-import { useEffect } from "react";
-import { CREDIT_ALLOWANCE_BY_SCORE } from "../lib/constants";
-import { BuilderScoreChart } from "./builder-score-chart";
-import NoPassportCard from "./noPassportCard";
-import { LoaderCircle } from "lucide-react";
-import { NewCreditRequestModal } from "./onchain/components/newCreditRequestModalButton";
-import BorrowAvailableCredit from "./BorrowAvailableCredit";
-import { getCreditInfo } from "@/controllers/creditalentApi";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Ecosistema from './Ecosistema';
+import AboutPool from './AboutPool';
+import { useQuery } from '@tanstack/react-query';
+import { fetchTalentPassport } from '../controllers/talentProtocolApi';
+import { useAccount } from 'wagmi';
+import { useEffect } from 'react';
+import { CREDIT_ALLOWANCE_BY_SCORE } from '../lib/constants';
+import { BuilderScoreChart } from './builder-score-chart';
+import NoPassportCard from './noPassportCard';
+import { LoaderCircle } from 'lucide-react';
+import { NewCreditRequestModal } from './onchain/components/newCreditRequestModalButton';
+import BorrowAvailableCredit from './BorrowAvailableCredit';
+import { getCreditInfo } from '@/controllers/creditalentApi';
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
@@ -23,15 +23,14 @@ export default function Component() {
   const [creditAllowed, setCreditAllowed] = useState(0);
   const { address: userAddress } = useAccount();
   const { data: creditInfoData, isLoading } = useQuery({
-    queryKey: ["creditInfoKey", userAddress],
+    queryKey: ['creditInfoKey', userAddress],
     queryFn: () => getCreditInfo(userAddress as string),
     enabled: Boolean(userAddress),
   });
 
-
   const { data: talentPassportData, status: talentPassportQueryStatus } =
     useQuery({
-      queryKey: ["talentPassportKey"],
+      queryKey: ['talentPassportKey'],
       queryFn: () => fetchTalentPassport(userAddress as string),
       enabled: Boolean(userAddress),
     });
@@ -48,8 +47,6 @@ export default function Component() {
     return creditAllowed;
   }
 
-
-
   useEffect(() => {
     console.log(talentPassportData);
     if (talentPassportData) {
@@ -63,40 +60,6 @@ export default function Component() {
   return (
     <main className="mx-auto max-w-[1400px] space-y-8 p-8">
       <div className="grid gap-8 lg:grid-cols-3">
-        <BorrowAvailableCredit/>
-
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">
-              Loans Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            {[
-              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowedAmount || "$0", apy: "7.5%" },
-              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowedAmount || "$0", apy: "7.5%" },
-              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowedAmount || "$0", apy: "7.5%" }, // DEMO1
-            ].map((loan) => (
-              <div key={loan.label} className="space-y-1">
-                <div className="text-sm text-muted-foreground">
-                  {loan.label}
-                </div>
-                <div className="flex justify-between">
-                  <div>
-                    {loan.amount}{" "}
-                    <span className="text-muted-foreground">XOC</span>
-                  </div>
-                  <div className="text-sm">
-                    APY <span className="font-medium">{loan.apy}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <NewCreditRequestModal talentPassportData={talentPassportData} creditAllowed={creditAllowed}  />
-          
-          </CardContent>
-        </Card>
-
         <Card className="bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl font-medium">
@@ -105,7 +68,7 @@ export default function Component() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="relative mx-auto">
-              {talentPassportQueryStatus === "pending" && (
+              {talentPassportQueryStatus === 'pending' && (
                 <>
                   <div className="flex flex-col items-center justify-center min-h-[192px]">
                     <LoaderCircle className="h-16 w-16 animate-spin text-[#FF4405]" />
@@ -114,7 +77,7 @@ export default function Component() {
                 </>
               )}
 
-              {talentPassportQueryStatus === "success" &&
+              {talentPassportQueryStatus === 'success' &&
                 (talentPassportData ? (
                   <BuilderScoreChart
                     builderScore={talentPassportData?.score ?? 0}
@@ -124,7 +87,7 @@ export default function Component() {
                 ))}
             </div>
             <div className="space-y-4 text-sm">
-              <p className="text-muted-foreground">
+              <p className="">
                 With {talentPassportData?.score ?? 0} points you are a competent
                 Builder and someone we can trust making the right choices with
                 investor&apos;s money.
@@ -133,7 +96,66 @@ export default function Component() {
                 Request a new credit line of up to $1,500 USDC&apos;s worth of
                 tokens.
               </p>
+              <p>
+                To increase your builder score and unlock more credit, please visit{' '}
+                <a
+                  href="https://passport.talentprotocol.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#FF5722] underline"
+                >
+                  Talent Protocol
+                </a>.
+              </p>
             </div>
+            <NewCreditRequestModal
+              talentPassportData={talentPassportData}
+              creditAllowed={creditAllowed}
+            />
+          </CardContent>
+        </Card>
+        <BorrowAvailableCredit />
+
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-medium">
+              Loans Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {[
+              {
+                label: 'Total $TALENT Borrowed',
+                amount: creditInfoData?.talent?.borrowedAmount || '$0',
+                apy: '7.5%',
+              },
+              {
+                label: 'Total $USDC Borrowed',
+                amount: creditInfoData?.usdc?.borrowedAmount || '$0',
+                apy: '7.5%',
+              },
+              {
+                label: 'Total $XOC Borrowed',
+                amount: creditInfoData?.xoc?.borrowedAmount || '$0',
+                apy: '7.5%',
+              }, // DEMO1
+            ].map((loan) => (
+              <div key={loan.label} className="space-y-1">
+                <div className="text-sm text-muted-foreground">
+                  {loan.label}
+                </div>
+                <div className="flex justify-between">
+                  <div>
+                    {loan.amount}{' '}
+                    <span className="text-muted-foreground">XOC</span>
+                  </div>
+                  <div className="text-sm">
+                    APY <span className="font-medium">{loan.apy}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
           </CardContent>
         </Card>
       </div>

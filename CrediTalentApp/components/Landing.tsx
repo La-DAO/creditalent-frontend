@@ -75,7 +75,7 @@ export default function Component() {
       </section>
 
       {/* How it Works */}
-      <section className="container mx-auto px-4 py-8 mt-16">
+      <section className="container mx-auto px-4 py-8 mt-32">
         <h2 className="mb-2 text-center text-3xl font-bold text-[#FF5722]">
           How it works?
         </h2>
