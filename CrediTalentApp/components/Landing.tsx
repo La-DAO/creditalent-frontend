@@ -135,7 +135,7 @@ export default function Component() {
       <section className="container mx-auto px-4 py-2">
         <div className="rounded-3xl bg-blue-50/50 px-4 py-6">
             <h2 className="mx-auto mb-24 mt-24 max-w-3xl text-center text-3xl font-bold text-[#FF5722] tracking-tighter">
-            We use your Talent passport to calculate your risk profile and extend an instant credit line.
+            We use your Talent passport to calculate your risk profile and extend an almost instant credit line.
             </h2>
           <div className="grid gap-8 md:grid-cols-3">
             {[
