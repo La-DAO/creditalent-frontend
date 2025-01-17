@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { getCreditInfo } from "../controllers/creditalentApi";
 import { BorrowForm } from "./BorrowForm";
+import { RepayForm } from "./RepayForm";
 import CreditStatus from './CreditStatus';
 
 export default function BorrowAvailableCredit() {
@@ -30,25 +31,46 @@ export default function BorrowAvailableCredit() {
             {/* XOC Credit Info */}
             <div className="flex flex-col gap-2">
               <CreditStatus status={creditInfoData?.xoc?.status} />
-              <div className="flex justify-between items-center">
-                <span>XOC Available:</span>
-                <span>{creditInfoData?.xoc?.amount || 0} XOC</span>
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span>XOC Available:</span>
+                  <span>{creditInfoData?.xoc?.amount || 0} XOC</span>
+                </div>
+                <div className="flex justify-between items-center text-orange-600">
+                  <span>XOC to Repay:</span>
+                  <span>{creditInfoData?.xoc?.borrowedAmount || 0} XOC</span>
+                </div>
               </div>
             </div>
 
             {/* TALENT Credit Info */}
-            <CreditStatus status={creditInfoData?.talent?.status} />
-
-            <div className="flex justify-between">
-              <span>Talent Available:</span>
-              <span>{creditInfoData?.talent?.amount || 0} Talent</span>
+            <div className="flex flex-col gap-2">
+              <CreditStatus status={creditInfoData?.talent?.status} />
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span>Talent Available:</span>
+                  <span>{creditInfoData?.talent?.amount || 0} Talent</span>
+                </div>
+                <div className="flex justify-between items-center text-orange-600">
+                  <span>Talent to Repay:</span>
+                  <span>{creditInfoData?.talent?.borrowedAmount || 0} Talent</span>
+                </div>
+              </div>
             </div>
 
             {/* USDC Credit Info */}
-            <CreditStatus status={creditInfoData?.usdc?.status} />
-            <div className="flex justify-between">
-              <span>USDC Available:</span>
-              <span>{creditInfoData?.usdc?.amount || 0} USDC</span>
+            <div className="flex flex-col gap-2">
+              <CreditStatus status={creditInfoData?.usdc?.status} />
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span>USDC Available:</span>
+                  <span>{creditInfoData?.usdc?.amount || 0} USDC</span>
+                </div>
+                <div className="flex justify-between items-center text-orange-600">
+                  <span>USDC to Repay:</span>
+                  <span>{creditInfoData?.usdc?.borrowedAmount || 0} USDC</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -70,6 +92,12 @@ export default function BorrowAvailableCredit() {
           </TabsList>
           <TabsContent value="borrow" className="space-y-4 pt-4">
             <BorrowForm 
+              creditInfo={creditInfoData}
+              isLoading={isLoading}
+            />
+          </TabsContent>
+          <TabsContent value="repay" className="space-y-4 pt-4">
+            <RepayForm
               creditInfo={creditInfoData}
               isLoading={isLoading}
             />

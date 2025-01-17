@@ -5,7 +5,7 @@ import {
 import { Address } from "viem";
 import { MorphoABI } from "@/components/onchain/abis";
 
-// Mainnet Morpho contract address
+// Base Sepolia Morpho contract address
 export const MORPHO_CONTRACT_ADDRESS = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb" as const;
 
 export type MarketParams = {
@@ -97,7 +97,7 @@ export const useMorpho = () => {
         address: MORPHO_CONTRACT_ADDRESS,
         abi: MorphoABI,
         functionName: "repay",
-        args: [marketParams, assets, onBehalf],
+        args: [marketParams, assets, BigInt(0), onBehalf, "0x"],
       });
     } catch (e) {
       console.error('Error in repay:', e);
