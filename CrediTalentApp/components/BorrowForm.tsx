@@ -1,24 +1,22 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { ASSET_TYPES, AssetType } from "@/lib/constants";
-import { toast } from "sonner";
-import { CreditInfoType } from "@/types/creditalent-responses";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { ASSET_TYPES, AssetType, CONTRACT_ADDRESSES } from "@/lib/constants"
+import { toast } from "sonner"
+import { CreditInfoType } from "@/types/creditalent-responses"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import { useWriteContract } from "wagmi";
-import { MORPHO_CONTRACT_ADDRESS } from "./onchain/hooks/useMorpho";
-import { MorphoABI } from "@/components/onchain/abis";
-import { parseUnits } from "viem";
-import { useToken } from "./onchain/hooks/useErc20";
-import { borrowedCredit } from "@/controllers/creditalentApi";
+} from "@/components/ui/select"
+import { useAccount } from "wagmi"
+import { parseUnits } from "viem"
+import { useToken } from "./onchain/hooks/useErc20"
+import { borrowedCredit } from "@/controllers/creditalentApi"
+import { useMorpho } from "./onchain/hooks/useMorpho"
 
 interface BorrowFormProps {
   creditInfo?: CreditInfoType;
@@ -26,80 +24,57 @@ interface BorrowFormProps {
 }
 
 export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormProps) {
-  const [borrowAmount, setBorrowAmount] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<AssetType>(ASSET_TYPES.XOC);
+  const [borrowAmount, setBorrowAmount] = useState("")
+  const [selectedAsset, setSelectedAsset] = useState<AssetType>(ASSET_TYPES.XOC)
+  const { address: userAddress } = useAccount()
+  const token = useToken(selectedAsset)
+  const { borrow, isLoadingBorrow, isSuccessBorrow } = useMorpho()
 
-  const hasApprovedApplications = creditInfo?.[selectedAsset]?.status === "APPROVED";
-  const availableCredit = creditInfo?.[selectedAsset]?.amount || 0;
+  const hasApprovedApplications = creditInfo?.[selectedAsset]?.status === "APPROVED"
+  const availableCredit = creditInfo?.[selectedAsset]?.amount || 0
 
-  // BORROW
-  const { writeContract: borrowAsync, data: borrowHash } = useWriteContract();
-  const { address: userAddress } = useAccount();
-  const token = useToken(selectedAsset);
-
-  const { isLoading: isLoadingBorrow, isSuccess: isSuccessBorrow } =
-    useWaitForTransactionReceipt({ hash: borrowHash });
-
-
-  // HANDLE SUCCESS
   useEffect(() => {
     if (isSuccessBorrow) {
-      const newAmount = (creditInfo?.[selectedAsset]?.amount || 0) - parseFloat(borrowAmount);
-      const newBorrowedAmount = (creditInfo?.[selectedAsset]?.borrowedAmount || 0) + parseFloat(borrowAmount);
-      borrowedCredit(userAddress as string, selectedAsset, newAmount, newBorrowedAmount);
-      toast.success("¡Préstamo exitoso!");
+      const newAmount = (creditInfo?.[selectedAsset]?.amount || 0) - parseFloat(borrowAmount)
+      const newBorrowedAmount = (creditInfo?.[selectedAsset]?.borrowedAmount || 0) + parseFloat(borrowAmount)
+      borrowedCredit(userAddress as string, selectedAsset, newAmount, newBorrowedAmount)
+      toast.success("Borrow successful!")
     }
-  }, [isSuccessBorrow]);
+  }, [isSuccessBorrow, borrowAmount, creditInfo, selectedAsset, userAddress])
 
   const onBorrow = async () => {
-    try {
-      setIsLoading(true);
-
-      if (!borrowAmount || parseFloat(borrowAmount) <= 0) {
-        toast.error("Por favor ingresa una cantidad válida");
-        return;
-      }
-
-      if (parseFloat(borrowAmount) > availableCredit) {
-        toast.error("La cantidad excede tu crédito disponible");
-        return;
-      }
-
-      try {
-
-        const borrowAmountInWei = parseUnits(borrowAmount, 18);
-        const onBehalf = userAddress;
-        const receiver = userAddress;
-        const creditTalentCenterAddress = "0xBD03d38828Bf0D56f1d325F96d4d48d4a2fa3549";
-        const creditPointsAddress = "0x3adE9C2638e407D4CCB5Ee09Fb052092FCaF6421";
-
-        const marketParams = {
-          loanToken: token.address,
-          collateralToken: creditPointsAddress,
-          oracle: creditTalentCenterAddress,
-          irm: "0x46415998764C29aB2a25CbeA6254146D50D22687",
-          lltv: BigInt(980000000000000000),
-        };
-
-        const payload = { 
-          address: MORPHO_CONTRACT_ADDRESS,
-          abi: MorphoABI,
-          functionName: "borrow",
-          args: [marketParams, borrowAmountInWei, BigInt(0), onBehalf, receiver],
-        }
-
-        await borrowAsync(payload);
-      } catch (e) {
-        toast.error("Error: ", e.toString());
-      }
-    } catch (error) {
-      toast.error("Error al procesar el préstamo: ", error.toString());
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    if (!userAddress) {
+      toast.error("Please connect your wallet")
+      return
     }
-  };
+
+    if (!borrowAmount || parseFloat(borrowAmount) <= 0) {
+      toast.error("Please enter a valid amount")
+      return
+    }
+
+    if (parseFloat(borrowAmount) > availableCredit) {
+      toast.error("Amount exceeds your available credit")
+      return
+    }
+
+    try {
+      const borrowAmountInWei = parseUnits(borrowAmount, 18)
+      const marketParams = {
+        loanToken: token.address,
+        collateralToken: CONTRACT_ADDRESSES.CREDIT_POINTS,
+        oracle: CONTRACT_ADDRESSES.CREDIT_TALENT_CENTER[selectedAsset],
+        irm: CONTRACT_ADDRESSES.IRM,
+        lltv: BigInt(980000000000000000),
+      }
+
+      await borrow(marketParams, borrowAmountInWei, BigInt(0), userAddress, userAddress)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error"
+      toast.error("Error processing loan: " + errorMessage)
+      console.error(error)
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -114,20 +89,20 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
           type="number"
           value={borrowAmount}
           onChange={(e) => {
-            const value = e.target.value;
+            const value = e.target.value
             if (value === "" || parseFloat(value) <= availableCredit) {
-              setBorrowAmount(value);
+              setBorrowAmount(value)
             }
           }}
           min={0}
           max={availableCredit}
           step="0.01"
-          disabled={!hasApprovedApplications || isLoading || isLoadingData}
+          disabled={!hasApprovedApplications || isLoadingData || isLoadingBorrow}
         />
         <Select
           value={selectedAsset}
           onValueChange={(value: AssetType) => setSelectedAsset(value)}
-          disabled={isLoading || isLoadingData}
+          disabled={isLoadingData || isLoadingBorrow}
         >
           <SelectTrigger className="w-[110px]">
             <SelectValue placeholder="Select asset" />
@@ -143,10 +118,10 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
       </div>
       <Button
         onClick={onBorrow}
-        disabled={!hasApprovedApplications || isLoading || isLoadingData || !borrowAmount}
+        disabled={!hasApprovedApplications || isLoadingData || isLoadingBorrow || !borrowAmount}
         className="w-full bg-[#FF4405] hover:bg-[#FF4405]/90"
       >
-        {isLoading || isLoadingBorrow || isLoadingData ? (
+        {isLoadingBorrow || isLoadingData ? (
           <Loader2 className="animate-spin h-5 w-5 mr-2" />
         ) : (
           `Borrow ${selectedAsset.toUpperCase()}`

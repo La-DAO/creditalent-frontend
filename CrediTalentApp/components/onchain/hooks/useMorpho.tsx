@@ -31,7 +31,6 @@ export const useMorpho = () => {
   const { isLoading: isLoadingRepay, isSuccess: isSuccessRepay } =
     useWaitForTransactionReceipt({ hash: repayHash });
 
-  console.log('🚀 ~ useMorpho ~ borrowReceipt:', borrowReceipt)
   const supply = async (
     marketParams: MarketParams,
     assets: bigint,
