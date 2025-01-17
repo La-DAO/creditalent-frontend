@@ -26,6 +26,7 @@ interface BorrowFormProps {
 export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormProps) {
   const [borrowAmount, setBorrowAmount] = useState("")
   const [selectedAsset, setSelectedAsset] = useState<AssetType>(ASSET_TYPES.XOC)
+  const [isProcessing, setIsProcessing] = useState(false)
   const { address: userAddress } = useAccount()
   const token = useToken(selectedAsset)
   const { borrow, isLoadingBorrow, isSuccessBorrow } = useMorpho()
@@ -59,6 +60,7 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
     }
 
     try {
+      setIsProcessing(true)
       const borrowAmountInWei = parseUnits(borrowAmount, 18)
       const marketParams = {
         loanToken: token.address,
@@ -73,6 +75,8 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       toast.error("Error processing loan: " + errorMessage)
       console.error(error)
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -118,11 +122,14 @@ export function BorrowForm({ creditInfo, isLoading: isLoadingData }: BorrowFormP
       </div>
       <Button
         onClick={onBorrow}
-        disabled={!hasApprovedApplications || isLoadingData || isLoadingBorrow || !borrowAmount}
+        disabled={!hasApprovedApplications || isLoadingData || isLoadingBorrow || !borrowAmount || isProcessing}
         className="w-full bg-[#FF4405] hover:bg-[#FF4405]/90"
       >
-        {isLoadingBorrow || isLoadingData ? (
-          <Loader2 className="animate-spin h-5 w-5 mr-2" />
+        {isLoadingBorrow || isLoadingData || isProcessing ? (
+          <div className="flex items-center justify-center">
+            <Loader2 className="animate-spin h-5 w-5 mr-2" />
+            <span>Processing...</span>
+          </div>
         ) : (
           `Borrow ${selectedAsset.toUpperCase()}`
         )}
