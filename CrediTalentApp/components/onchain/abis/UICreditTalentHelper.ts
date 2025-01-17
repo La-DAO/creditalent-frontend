@@ -1,0 +1,2 @@
+const CreditTalentCenter = [{"inputs":[{"internalType":"address","name":"creditCenter","type":"address"},{"internalType":"address","name":"user","type":"address"}],"name":"getUserLoanInfo","outputs":[{"internalType":"uint256","name":"creditLine","type":"uint256"},{"internalType":"uint256","name":"debtBalance","type":"uint256"},{"internalType":"uint256","name":"interestRatePerSecond","type":"uint256"}],"stateMutability":"view","type":"function"}];
+export default CreditTalentCenter;

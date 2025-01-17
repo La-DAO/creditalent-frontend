@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Ecosistema from "./Ecosistema";
 import AboutPool from "./AboutPool";
@@ -16,11 +16,34 @@ import { LoaderCircle } from "lucide-react";
 import { NewCreditRequestModal } from "./onchain/components/newCreditRequestModalButton";
 import BorrowAvailableCredit from "./BorrowAvailableCredit";
 import { getCreditInfo } from "@/controllers/creditalentApi";
+import { useUICreditTalentHelper } from "./onchain/hooks";
+import { ASSET_TYPES } from "@/lib/constants";
+
+const calculateAPY = (borrowInterestRate: bigint): string => {
+  // Convert bigint to number for math operations
+  const ratePerSecond = Number(borrowInterestRate) / 1e18; // Assuming 18 decimals
+  const SECONDS_PER_YEAR = 31536000;
+  
+  // Calculate APY: (1 + r)^n - 1
+  const apy = (Math.pow(1 + ratePerSecond, SECONDS_PER_YEAR) - 1) * 100;
+  
+  // Format to 2 decimal places
+  return `${apy.toFixed(2)}%`;
+};
 
 export default function Component() {
   // const [isAboutOpen, setIsAboutOpen] = useState(false)
 
   const [creditAllowed, setCreditAllowed] = useState(0);
+  const { loanInfo: talentLoanInfo } = useUICreditTalentHelper(ASSET_TYPES.TALENT);
+  const { loanInfo: usdcLoanInfo } = useUICreditTalentHelper(ASSET_TYPES.USDC);
+  const { loanInfo: xocLoanInfo } = useUICreditTalentHelper(ASSET_TYPES.XOC);
+
+  const apyRates = useMemo(() => ({
+    talent: talentLoanInfo ? calculateAPY(talentLoanInfo.borrowInterestRatePerSecond) : "TBD",
+    usdc: usdcLoanInfo ? calculateAPY(usdcLoanInfo.borrowInterestRatePerSecond) : "TBD",
+    xoc: xocLoanInfo ? calculateAPY(xocLoanInfo.borrowInterestRatePerSecond) : "TBD"
+  }), [talentLoanInfo, usdcLoanInfo, xocLoanInfo]);
   const { address: userAddress } = useAccount();
   const { data: creditInfoData, isLoading } = useQuery({
     queryKey: ["creditInfoKey", userAddress],
@@ -73,9 +96,9 @@ export default function Component() {
           </CardHeader>
           <CardContent className="space-y-8">
             {[
-              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowedAmount || "$0", apy: "7.5%" },
-              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowedAmount || "$0", apy: "7.5%" },
-              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowedAmount || "$0", apy: "7.5%" }, // DEMO1
+              { label: "Total $TALENT Borrowed", amount: creditInfoData?.talent?.borrowedAmount || "$0", apy: apyRates.talent },
+              { label: "Total $USDC Borrowed", amount: creditInfoData?.usdc?.borrowedAmount || "$0", apy: apyRates.usdc },
+              { label: "Total $XOC Borrowed", amount: creditInfoData?.xoc?.borrowedAmount || "$0", apy: apyRates.xoc },
             ].map((loan) => (
               <div key={loan.label} className="space-y-1">
                 <div className="text-sm text-muted-foreground">
