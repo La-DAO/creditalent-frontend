@@ -39,7 +39,6 @@ export function NewCreditRequestModal({
   const { user } = useDynamicContext();
   const { switchToBaseSepolia } = useNetworkSwitch();
 
-  // Usar los nuevos hooks
   const {
     application,
     applyForCredit,
@@ -56,85 +55,80 @@ export function NewCreditRequestModal({
         return;
       }
 
-      // Verificar si ya existe una aplicación
       if (getApplicationExists(application)) {
         toast.error("Application already exists");
         return;
       }
-
-      // TODO: FOR TESTING
-      // if (talentPassportData === null && isTalentPassportRequired) {
-      //   toast.error("Required talent passport!");
-      //   return;
-      // }
 
       if (accountAddress == null) {
         toast.warning("user not logged");
         return;
       }
 
-      // Cambiar red si es necesario
       const networkSwitched = await switchToBaseSepolia();
       if (!networkSwitched) return;
 
-      // Usar el nuevo hook para aplicar al crédito
       const dataHash =
-        "0x0000000000000000000000000000000000000000000000000000000000000002"; // TODO: Generar hash real
+        "0x0000000000000000000000000000000000000000000000000000000000000002";
       await applyForCredit(dataHash);
     } catch (error) {
       toast.error("Ups.." + error);
-    } finally {
       setIsLoading(false);
-      setIsOpen(false);
     }
   };
 
-  // Manejar el éxito de la transacción
   useEffect(() => {
-    if (!isLoadingApplyToCredit && isSuccessApplyToCredit && !getApplicationExists(application) ) {
-     
-      // Agregamos await y hacemos la función async
-      (async () => {
-        try {
-          const applicationInfo = await getApplicationInfoAsync();
-          const dataToSend = createLoanApplicationDataFromTalentPassport(
-            accountAddress!,
-            +amount,
-            parseInt(applicationInfo?.id?.toString() ?? ""),
-            creditAllowed,
-            selectedToken,
-            talentPassportData
-          );
-    
-          await createLoanApplication(dataToSend);
-          toast.success("Credit line requested successfully");
-        } catch (error) {
-          toast.error("Error creating loan application");
-          console.error(error);
-        }
-      })();
-    }
-  }, [isLoadingApplyToCredit, isSuccessApplyToCredit, application]);
+    const createApplication = async () => {
+      if (isLoadingApplyToCredit || !isSuccessApplyToCredit || getApplicationExists(application)) {
+        return;
+      }
+
+      try {
+        const applicationInfo = await getApplicationInfoAsync();
+        if (!applicationInfo) return;
+
+        const dataToSend = createLoanApplicationDataFromTalentPassport(
+          accountAddress!,
+          +amount,
+          parseInt(applicationInfo.id?.toString() ?? ""),
+          creditAllowed,
+          selectedToken,
+          talentPassportData
+        );
+
+        await createLoanApplication(dataToSend);
+        toast.success("Credit line requested successfully");
+        setIsOpen(false);
+      } catch (error) {
+        toast.error("Error creating loan application");
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    createApplication();
+  }, [isSuccessApplyToCredit, isLoadingApplyToCredit, application, accountAddress, amount, creditAllowed, selectedToken, talentPassportData]);
 
   const createLoanApplicationDataFromTalentPassport = (
-    walletId: string, // Wallet Id
-    amount: number, // You'll need to get the amount from somewhere (e.g., user input)
-    applicationId: number, // Application Id from contract
-    availableCreditLine: number, // Get available credit line
-    tokenType: string, // Token ttype
+    walletId: string,
+    amount: number,
+    applicationId: number,
+    availableCreditLine: number,
+    tokenType: string,
     talentPassport?: TalentPassportType | null
   ): CreateLoanApplicationData => {
     const totalFollowerCount = talentPassport?.passport_socials?.reduce(
-      (sum, social) => sum + (social.follower_count || 0), // Handle cases where follower_count might be null or undefined
+      (sum, social) => sum + (social.follower_count || 0),
       0
     );
 
-    const loanApplicationData: CreateLoanApplicationData = {
+    return {
       amount,
       availableCreditLine,
       assetType: tokenType,
-      status: "PENDING", // Default status
-      xocScore: -1, // Or whatever default value you use
+      status: "PENDING",
+      xocScore: -1,
       builderScore: talentPassport?.score ?? -1,
       nominationsReceived: talentPassport?.nominations_received_count ?? -1,
       followers: totalFollowerCount ?? -1,
@@ -143,14 +137,12 @@ export function NewCreditRequestModal({
       userName: user?.username ?? "-",
       userPictureUrl: talentPassportData?.user?.profile_picture_url ?? "",
     };
-
-    return loanApplicationData;
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#FF4405] hover:bg-[#FF4405]/90">
+        <Button variant="destructive" className="bg-[#FF4405] hover:bg-[#FF4405]/90">
           Request a New Credit Line
         </Button>
       </DialogTrigger>
@@ -211,11 +203,15 @@ export function NewCreditRequestModal({
           </div>
           <div className="flex justify-center gap-4">
             <Button
+              variant="destructive"
               className="bg-[#FF4405] hover:bg-[#FF4405]/90"
               onClick={handleRequestCreditLine}
-              disabled={!amount || isLoading}
+              disabled={!amount || isLoading || isLoadingApplyToCredit}
             >
-              Request
+              {(isLoading || isLoadingApplyToCredit) && (
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              )}
+              {isLoadingApplyToCredit ? "Confirming Transaction..." : isLoading ? "Saving..." : "Request"}
             </Button>
           </div>
         </div>
