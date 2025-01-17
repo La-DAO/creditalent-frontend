@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 import { AssetType } from "@/lib/constants";
 import { useCreditTalentCenter } from "../hooks/useCreditTalentCenter";
 import { Address } from "viem";
-import { approveLoanApplication } from "@/controllers/creditalentApi";
+import { approveLoanApplication, saveApproveCreditInfo } from "@/controllers/creditalentApi";
 
 const MAX_UINT256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
@@ -41,12 +41,38 @@ export function ApproveModalButton({
 
   // Monitorear éxito de la transacción
   useEffect(() => {
-    if (isSuccessApproveCredit) {
-      toast.success("¡Solicitud aprobada exitosamente!");
-      setIsOpen(false);
-      setIsLoading(false);
-    }
-  }, [isSuccessApproveCredit]);
+    const updateApproval = async () => {
+      if (isSuccessApproveCredit && amount && assetType) {
+        try {
+          // Llamar a la API solo después de que la transacción blockchain sea exitosa
+          await approveLoanApplication(
+            loanApplication.id as number, 
+            loanApplication.walletId, 
+            assetType, 
+            +amount
+          );
+          
+          // Actualizar el estado del crédito
+          await saveApproveCreditInfo(
+            loanApplication.id as number,
+            loanApplication.walletId,
+            assetType,
+            +amount
+          );
+
+          toast.success("¡Solicitud aprobada exitosamente!");
+          setIsOpen(false);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error updating approval status:', error);
+          toast.error("Error al actualizar el estado de la aprobación");
+          setIsLoading(false);
+        }
+      }
+    };
+
+    updateApproval();
+  }, [isSuccessApproveCredit, amount, assetType, loanApplication]);
 
   const handleApprove = async () => {
     if (!assetType || !amount) {
@@ -64,14 +90,6 @@ export function ApproveModalButton({
         applicationId,
         amount,
         BigInt(MAX_UINT256)
-      );
-
-      // La llamada a la API se mantiene
-      await approveLoanApplication(
-        loanApplication.id as number, 
-        loanApplication.walletId, 
-        assetType, 
-        +amount
       );
 
     } catch (err) {
